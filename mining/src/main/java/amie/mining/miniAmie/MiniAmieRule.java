@@ -136,8 +136,8 @@ public class MiniAmieRule extends Rule {
 
             if (miniAMIE.PM == PruningMetric.Support || miniAMIE.PM == PruningMetric.HeadCoverage) {
                 start = System.nanoTime();
-                openRule.setSupport(RealSupport(this));
-                openRule.setHeadCoverage(RealHeadCoverage(this));
+                openRule.setSupport(RealSupport(openRule));
+                openRule.setHeadCoverage(RealHeadCoverage(openRule));
                 time = System.nanoTime() - start;
                 openRule.setSupportNano(time);
             }
@@ -159,8 +159,8 @@ public class MiniAmieRule extends Rule {
 
             if (miniAMIE.PM == PruningMetric.Support || miniAMIE.PM == PruningMetric.HeadCoverage) {
                 start = System.nanoTime();
-                openRuleAlt.setSupport(RealSupport(this));
-                openRuleAlt.setHeadCoverage(RealHeadCoverage(this));
+                openRuleAlt.setSupport(RealSupport(openRuleAlt));
+                openRuleAlt.setHeadCoverage(RealHeadCoverage(openRuleAlt));
                 time = System.nanoTime() - start;
                 openRuleAlt.setSupportNano(time);
             }
@@ -272,8 +272,8 @@ public class MiniAmieRule extends Rule {
 
                 if (miniAMIE.PM == PruningMetric.Support || miniAMIE.PM == PruningMetric.HeadCoverage) {
                     start = System.nanoTime();
-                    closedRule.setSupport(RealSupport(this));
-                    closedRule.setHeadCoverage(RealHeadCoverage(this));
+                    closedRule.setSupport(RealSupport(closedRule));
+                    closedRule.setHeadCoverage(RealHeadCoverage(closedRule));
                     time = System.nanoTime() - start;
                     closedRule.setSupportNano(time);
                 }
@@ -303,8 +303,8 @@ public class MiniAmieRule extends Rule {
 
                 if (miniAMIE.PM == PruningMetric.Support || miniAMIE.PM == PruningMetric.HeadCoverage) {
                     start = System.nanoTime();
-                    closedRule.setSupport(RealSupport(this));
-                    closedRule.setHeadCoverage(RealHeadCoverage(this));
+                    closedRule.setSupport(RealSupport(closedRule));
+                    closedRule.setHeadCoverage(RealHeadCoverage(closedRule));
                     time = System.nanoTime() - start;
                     closedRule.setSupportNano(time);
                 }
@@ -348,8 +348,8 @@ public class MiniAmieRule extends Rule {
 
             if (miniAMIE.PM == PruningMetric.Support || miniAMIE.PM == PruningMetric.HeadCoverage) {
                 start = System.nanoTime();
-                closedRule.setSupport(RealSupport(this));
-                closedRule.setHeadCoverage(RealHeadCoverage(this));
+                closedRule.setSupport(RealSupport(closedRule));
+                closedRule.setHeadCoverage(RealHeadCoverage(closedRule));
                 time = System.nanoTime() - start;
                 closedRule.setSupportNano(time);
             }
@@ -372,8 +372,8 @@ public class MiniAmieRule extends Rule {
 
             if (miniAMIE.PM == PruningMetric.Support || miniAMIE.PM == PruningMetric.HeadCoverage) {
                 start = System.nanoTime();
-                closedRuleAlt.setSupport(RealSupport(this));
-                closedRuleAlt.setHeadCoverage(RealHeadCoverage(this));
+                closedRuleAlt.setSupport(RealSupport(closedRuleAlt));
+                closedRuleAlt.setHeadCoverage(RealHeadCoverage(closedRuleAlt));
                 time = System.nanoTime() - start;
                 closedRuleAlt.setSupportNano(time);
             }

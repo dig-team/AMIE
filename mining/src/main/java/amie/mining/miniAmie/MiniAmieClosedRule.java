@@ -189,8 +189,6 @@ public class MiniAmieClosedRule extends MiniAmieRule {
             time = System.nanoTime() - start;
             this.setSupport(support);
             this.setSupportNano(time);
-        } else {
-            this.setSupport(this.getApproximateSupport());
         }
 
         setSelectivity(new JacquardSelectivity());

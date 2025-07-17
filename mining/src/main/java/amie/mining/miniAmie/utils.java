@@ -424,7 +424,7 @@ public abstract class utils {
 
         //List<MiniAmieClosedRule> miniAmieClosedRules = new ArrayList<>();
         if (miniAMIE.shouldComputeRealMetricsAfterMining()) {
-            System.out.println("Computing real support and PCA confidence ...");
+            System.out.println("Computing real support and PCA confidence after mining...");
         }
 
         if (NThreads == 1) {
