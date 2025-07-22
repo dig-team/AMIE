@@ -2,6 +2,7 @@ package amie.mining.miniAmie.output;
 
 import amie.mining.miniAmie.MiniAmieClosedRule;
 import amie.rules.format.AnyBurlFormatter;
+import amie.rules.format.MiniAmieAnyBurlFormatter;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,9 +10,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
-import static amie.mining.miniAmie.miniAMIE.*;
+import amie.mining.miniAmie.miniAMIE;
 import static amie.mining.miniAmie.miniAMIE.Kb;
 import static amie.mining.miniAmie.utils.*;
+
 
 public abstract class OutputRules {
 
@@ -85,7 +87,12 @@ public abstract class OutputRules {
             // Computing all metrics using available cores
             List<MiniAmieClosedRule> rules = ComputeRuleListMetrics(finalRules);
 
-            AnyBurlFormatter anyBurlFormatter = new AnyBurlFormatter(false);
+            AnyBurlFormatter anyBurlFormatter = null;
+            if (miniAMIE.shouldComputeRealMetricsAfterMining()) {
+                anyBurlFormatter = new AnyBurlFormatter(false);
+            } else {
+                anyBurlFormatter = new MiniAmieAnyBurlFormatter(false);
+            }
             for (MiniAmieClosedRule rule : rules) {
                 String line = anyBurlFormatter.fullFormat(rule) + "\n";
                 outputWriter.write(line);

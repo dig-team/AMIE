@@ -4,6 +4,7 @@ import amie.data.AbstractKB;
 import amie.data.KB;
 import amie.rules.PruningMetric;
 import amie.rules.Rule;
+import amie.rules.format.OutputColumn;
 import it.unimi.dsi.fastutil.ints.*;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -550,5 +551,12 @@ public class MiniAmieRule extends Rule {
         return this.ComputeSupportApproximation() / this.HeadSize() ;
     }
 
+    @Override
+    public Object getOutputColumn(OutputColumn col) {
+        if (col == OutputColumn.ApproxSupport)
+            return this.getApproximateSupport();
+        else
+            return super.getOutputColumn(col);
+    }
 
 }

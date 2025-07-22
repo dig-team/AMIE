@@ -125,7 +125,7 @@ public abstract class miniAMIE {
         }
     }
 
-    static boolean shouldComputeRealMetricsAfterMining() {
+    public static boolean shouldComputeRealMetricsAfterMining() {
         return (PM == PruningMetric.ApproximateSupport || PM == PruningMetric.ApproximateHeadCoverage) &&
                 ComputeActualMetrics;
     }

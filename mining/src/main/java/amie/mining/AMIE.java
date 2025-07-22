@@ -6,6 +6,8 @@ package amie.mining;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -1171,6 +1173,24 @@ public class AMIE {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        long startTime = System.currentTimeMillis();
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if (!Files.exists(Paths.get(GlobalSearchResult.OutputConfigurationCsvPath))){
+                    GlobalSearchResult.PrintGlobalSearchResultToCSV(
+                            maxDepth,
+                            pruningMetric,
+                            minSup,
+                            minHeadCover,
+                            -1, // This suggests the program did
+                            System.currentTimeMillis() - startTime,
+                            SearchSpaceSize
+                    );
+                }
+            }
+        });
+
         InitElements initElements = initFromArgs(args);
 
         if (initElements.cli.getArgs().length < 1

@@ -212,7 +212,9 @@ public class MiniAmieClosedRule extends MiniAmieRule {
         } else {
             // This is redundant because this.getPcaEstimation gives us the confidence itself
             // but we have to convert it into a denominator to comply with the rule interface :/
-            this.setPcaBodySize(this.getApproximateSupport() / this.getPcaEstimation());
+            //this.setPcaBodySize(this.getApproximateSupport() / this.getPcaEstimation());
+            this.setPcaBodySize(this.getApproximateSupport());
+            // We forget about using the Pca estimation because empirically it does not seem to work
         }
     }
 

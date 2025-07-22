@@ -5,5 +5,5 @@ package amie.rules.format;
  */
 public enum OutputColumn {
 	Rule, HeadCoverage, StandardConfidence, PcaConfidence, Support, SupportRatio, BodySize, PcaBodySize,
-	FunctionalVariable, StdConfUpperBound, PcaConfUpperBound, PcaConfEstimation
+	FunctionalVariable, StdConfUpperBound, PcaConfUpperBound, PcaConfEstimation, ApproxSupport
 }
