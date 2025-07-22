@@ -531,7 +531,16 @@ public class AMIE {
         List<File> targetFiles = new ArrayList<>();
         List<File> schemaFiles = new ArrayList<>();
 
-        AbstractKB dataSource = new KB();
+        AbstractKB dataSource = null;
+
+        if (cli.hasOption(AMIEOptions.MINI_AMIE.getOpt())) {
+            dataSource = new MiniKB();
+        } else if (cli.hasOption(AMIEOptions.MULTILINGUAL.getOpt())) {
+            dataSource = new MultilingualKB();
+        } else {
+            dataSource = new KB();
+        }
+
 
         // Caching
         if (cli.hasOption(AMIEOptions.CPOL.getOpt())) {
@@ -550,9 +559,6 @@ public class AMIE {
             System.out.println("Note: Query caching is enabled, but make sure communication layer relies on it.");
         }
 
-        if (cli.hasOption(AMIEOptions.MULTILINGUAL.getOpt())) {
-            dataSource = new MultilingualKB();
-        }
 
         if (cli.hasOption(AMIEOptions.DELIMITER.getOpt())) {
             dataSource.setDelimiter(cli.getOptionValue(AMIEOptions.DELIMITER.getOpt()));

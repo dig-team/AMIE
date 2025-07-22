@@ -248,11 +248,7 @@ public abstract class utils {
 
             overlapTable.put(r1, overlaps1);
             overlapTable.put(r2, overlaps2);
-
-
         } else {
-
-
             overlap = factSet.getOrDefault(r2, NO_OVERLAP_VALUE);
             if (overlap == NO_OVERLAP_VALUE) {
                 IntSet r1_set = triplesKeySet1.get(r1).keySet();
@@ -261,8 +257,6 @@ public abstract class utils {
 
                 factSet.put(r1, overlap);
                 factSet.put(r2, overlap);
-
-
             }
         }
         overlapLock.unlock();
