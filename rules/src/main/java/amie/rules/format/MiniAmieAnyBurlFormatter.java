@@ -9,6 +9,6 @@ public class MiniAmieAnyBurlFormatter extends AnyBurlFormatter {
     @Override
     public OutputColumn[] columns() {
         return new OutputColumn[] { OutputColumn.PcaBodySize, OutputColumn.ApproxSupport,
-                OutputColumn.PcaConfidence, OutputColumn.Rule };
+                OutputColumn.PcaConfEstimation, OutputColumn.Rule };
     }
 }
