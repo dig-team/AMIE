@@ -196,23 +196,8 @@ public abstract class miniAMIE {
         searchSpace.addAndGet(initRulesInstantiatedParameter.size());
 
         if (OutputRules) {
-
             System.out.println("Mini-AMIE rules output: ");
-            List<MiniAmieClosedRule> closedRules ;
-            if (EnableConstants){
-                closedRules = new ArrayList<>() ;
-                closedRules.addAll(finalRulesUninstantiated) ;
-                closedRules.addAll(finalRulesAcyclicInstantiatedVariables) ;
-            } else {
-                closedRules = finalRulesUninstantiated ;
-            }
-
-            if (UseAnyBurlOutputFormat) {
-                PrintOutputAnyBurlFormat(closedRules, OutputRulesPath);
-            } else {
-                PrintOutputCSV(closedRules, OutputRulesPath) ;
-            }
-
+            outputRules();
         }
 
         if (CompareToGroundTruth) {
@@ -238,6 +223,24 @@ public abstract class miniAMIE {
 
         if(NThreads > 1)
             executor.shutdown();
+    }
+
+    public static void outputRules() {
+        List<MiniAmieClosedRule> closedRules ;
+
+        if (EnableConstants){
+            closedRules = new ArrayList<>() ;
+            closedRules.addAll(finalRulesUninstantiated) ;
+            closedRules.addAll(finalRulesAcyclicInstantiatedVariables) ;
+        } else {
+            closedRules = finalRulesUninstantiated ;
+        }
+
+        if (UseAnyBurlOutputFormat) {
+            PrintOutputAnyBurlFormat(closedRules, OutputRulesPath);
+        } else {
+            PrintOutputCSV(closedRules, OutputRulesPath) ;
+        }
     }
 
     private static void printMiniAmieResultInfo(long duration) {

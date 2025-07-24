@@ -117,6 +117,8 @@ public class AMIE {
      */
     protected PrintStream rulesOutputStream;
 
+    protected boolean interrupted;
+
     /**
      * @param assistant         An object that implements the logic of the mining
      *                          operators.
@@ -140,6 +142,7 @@ public class AMIE {
         this.realTime = true;
         this.seeds = null;
         this.rulesOutputStream = System.out;
+        this.interrupted = false;
     }
 
     public MiningAssistant getAssistant() {
@@ -149,6 +152,8 @@ public class AMIE {
     public boolean isVerbose() {
         return assistant.isVerbose();
     }
+
+    public boolean hasBeenInterrupted() { return interrupted; }
 
     public boolean isRealTime() {
         return realTime;
@@ -175,6 +180,7 @@ public class AMIE {
      * @throws Exception
      */
     public List<Rule> mine() throws Exception {
+        this.interrupted = true;
         List<Rule> result = new ArrayList<>();
         MultiMap<Integer, Rule> indexedResult = new MultiMap<>();
         RuleConsumer consumerObj = null;
@@ -238,6 +244,7 @@ public class AMIE {
                 printRulePrefix(object);
             }
         }
+        this.interrupted = false;
         return result;
     }
 
@@ -931,7 +938,6 @@ public class AMIE {
                 miniAMIE.OutputRulesPath = cli.getOptionValue(AMIEOptions.OUTPUT_FILE.getOpt());
                 System.out.println("Set custom output path: " + cli.getOptionValue(AMIEOptions.OUTPUT_FILE.getOpt()));
             }
-            miniAMIE.Run() ;
             return null ;
 
         }
@@ -1166,6 +1172,18 @@ public class AMIE {
         return formattedDuration.toString().trim();
     }
 
+    private static void outputRules(AMIE miner, List<Rule> rules) {
+        if (!miner.isRealTime()) {
+            miner.outputHeader();
+            for (Rule rule : rules) {
+                miner.outputRule(rule);
+            }
+        }
+
+        miner.closeOutput();
+
+    }
+
     /**
      * AMIE's main program
      *
@@ -1174,23 +1192,6 @@ public class AMIE {
      */
     public static void main(String[] args) throws Exception {
         long startTime = System.currentTimeMillis();
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                if (!Files.exists(Paths.get(GlobalSearchResult.OutputConfigurationCsvPath))){
-                    GlobalSearchResult.PrintGlobalSearchResultToCSV(
-                            maxDepth,
-                            pruningMetric,
-                            minSup,
-                            minHeadCover,
-                            -1, // This suggests the program did
-                            System.currentTimeMillis() - startTime,
-                            SearchSpaceSize
-                    );
-                }
-            }
-        });
-
         InitElements initElements = initFromArgs(args);
 
         if (initElements.cli.getArgs().length < 1
@@ -1210,26 +1211,50 @@ public class AMIE {
         long loadingStartTime = System.currentTimeMillis();
 
         AMIE miner = AMIE.getInstance(initElements);
-        if (miner == null)
-            System.exit(0);
+        List<Rule> rules = new ArrayList<>();
 
+        // Handle the SIGTERM signal
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if (miner == null) {
+                    if (!Files.exists(Paths.get(GlobalSearchResult.OutputConfigurationCsvPath))) {
+                        System.err.println("Ending miniAMIE gracefully due to premature termination");
+                        miniAMIE.outputRules();
+                        GlobalSearchResult.PrintGlobalSearchResultToCSV(
+                                maxDepth,
+                                pruningMetric,
+                                minSup,
+                                minHeadCover,
+                                -1, // This suggests the program did
+                                System.currentTimeMillis() - startTime,
+                                SearchSpaceSize
+                        );
+                    }
+                } else {
+                    if (miner.hasBeenInterrupted()) {
+                        System.err.println("Ending AMIE gracefully due to premature termination");
+                        AMIE.outputRules(miner, rules);
+                    }
+                }
+            }
+        });
+
+        if (miner == null) {
+            // It means we are running miniAMIE
+            miniAMIE.Run() ;
+            System.exit(0);
+        }
         long loadingTime = System.currentTimeMillis() - loadingStartTime;
 
         System.out.println("MRT calls: " + KB.STAT_NUMBER_OF_CALL_TO_MRT.get());
         Announce.doing("Starting the mining phase");
 
         long time = System.currentTimeMillis();
-        List<Rule> rules = miner.mine();
+        rules.addAll(miner.mine());
         Announce.doing("Ended the mining phase");
 
-        if (!miner.isRealTime()) {
-            miner.outputHeader();
-            for (Rule rule : rules) {
-                miner.outputRule(rule);
-            }
-        }
-
-        miner.closeOutput();
+        outputRules(miner, rules);
 
         long miningTime = System.currentTimeMillis() - time;
         System.out.println("Mining done in " + formatDuration(miningTime));
