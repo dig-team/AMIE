@@ -2,6 +2,7 @@ package amie.mining.assistant.pyclause;
 
 import java.util.Collection;
 
+import amie.data.AbstractKB;
 import amie.data.KB;
 import amie.mining.assistant.DefaultMiningAssistant;
 import amie.mining.assistant.MiningOperator;
@@ -11,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public class AnyBurlMiningAssistant extends DefaultMiningAssistant {
 
-	public AnyBurlMiningAssistant(KB dataSource) {
+	public AnyBurlMiningAssistant(AbstractKB dataSource) {
 		super(dataSource);
 	}
 

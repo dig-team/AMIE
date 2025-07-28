@@ -101,9 +101,7 @@ public class DefaultMiningAssistant extends MiningAssistant {
 			return;
 		}
 
-		int nPatterns = rule.getTriples().size();
-
-		if (rule.isEmpty())
+        if (rule.isEmpty())
 			return;
 
 		if (!isNotTooLong(rule))
@@ -252,8 +250,6 @@ public class DefaultMiningAssistant extends MiningAssistant {
 	 */
 	@MiningOperator(name = "dangling")
 	public void getDanglingAtoms(Rule rule, double minSupportThreshold, Collection<Rule> output) {
-		int[] newEdge = rule.fullyUnboundTriplePattern();
-
 		if (rule.isEmpty()) {
 			throw new IllegalArgumentException("This method expects a non-empty query");
 		}
@@ -283,6 +279,7 @@ public class DefaultMiningAssistant extends MiningAssistant {
 		}
 
 		int[] joinPositions = new int[] { 0, 2 };
+		int[] newEdge = rule.fullyUnboundTriplePattern();
 
 		getDanglingAtoms(rule, newEdge, minSupportThreshold, joinVariables, joinPositions, output);
 	}

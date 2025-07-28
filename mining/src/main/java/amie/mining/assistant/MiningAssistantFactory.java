@@ -63,11 +63,11 @@ public class MiningAssistantFactory {
                 Constructor<?> constructor = null;
                 try {
                     // Standard constructor
-                    constructor = assistantClass.getConstructor(new Class[] { KB.class });
+                    constructor = assistantClass.getConstructor(new Class[] { AbstractKB.class });
                     mineAssistant = (MiningAssistant) constructor.newInstance(dataSource);
                 } catch (NoSuchMethodException e) {
                     try {
-                        constructor = assistantClass.getConstructor(new Class[] { KB.class, KB.class });
+                        constructor = assistantClass.getConstructor(new Class[] { AbstractKB.class, AbstractKB.class });
                         mineAssistant = (MiningAssistant) constructor.newInstance(dataSource, schemaSource);
                     } catch (Exception e2p) {
                         e.printStackTrace();
