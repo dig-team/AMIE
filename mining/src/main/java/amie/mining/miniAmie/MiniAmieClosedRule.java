@@ -164,7 +164,7 @@ public class MiniAmieClosedRule extends MiniAmieRule {
             // When uninstantiated, closure factor is body to head selectivity
             int[] head = this.getHead();
             int headSubject = head[SUBJECT_POSITION];
-            closureFactor = Selectivity.selectivity(
+            closureFactor = SelectivityForHead.selectivity(
                     head,
                     lastBodyAtom,
                     headSubject
@@ -191,11 +191,14 @@ public class MiniAmieClosedRule extends MiniAmieRule {
             this.setSupportNano(time);
         }
 
-        setSelectivity(new JacquardSelectivity());
+        setSelectivityForHead(new JacquardSelectivity());
+        setSelectivityForBody(new JacquardSelectivity());
         this.setJacquardBasedAppSupport(this.ComputeSupportApproximation());
-        setSelectivity(new AvgSelectivity());
+        setSelectivityForHead(new AvgSelectivity());
+        setSelectivityForBody(new AvgSelectivity());
         this.setAvgBasedAppSupport(this.ComputeSupportApproximation());
-        setSelectivity(new SurvivalRateSelectivity());
+        setSelectivityForHead(new SurvivalRateSelectivity());
+        setSelectivityForBody(new SurvivalRateSelectivity());
         this.setSurvivalRateBasedAppSupport(this.ComputeSupportApproximation());
 
         miniAMIE.ResetSelectivity();

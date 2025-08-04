@@ -1,14 +1,11 @@
 package amie.mining.miniAmie;
 
 import amie.data.AbstractKB;
-import amie.data.KB;
 import amie.mining.assistant.DefaultMiningAssistant;
 import amie.mining.miniAmie.output.comparisonToGroundTruth.CompareToGT;
-import amie.mining.utils.GlobalSearchResult;
 import amie.rules.PruningMetric;
 import amie.rules.Rule;
 
-import java.sql.Time;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -132,10 +129,11 @@ public abstract class miniAMIE {
 
     public static void ResetSelectivity() {
         if (UseDirectionalSelectivity) {
-            MiniAmieRule.setSelectivity(new utils.SurvivalRateSelectivity()) ;
+            MiniAmieRule.setSelectivityForBody(new utils.SurvivalRateSelectivity()) ;
         } else {
-            MiniAmieRule.setSelectivity(new utils.JacquardSelectivity()) ;
+            MiniAmieRule.setSelectivityForBody(new utils.JacquardSelectivity()) ;
         }
+        MiniAmieRule.setSelectivityForHead(new utils.SurvivalRateSelectivity());
     }
 
     public static void Run() {

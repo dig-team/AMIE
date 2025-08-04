@@ -6,7 +6,6 @@ import amie.rules.PruningMetric;
 import amie.rules.Rule;
 import amie.rules.format.OutputColumn;
 import it.unimi.dsi.fastutil.ints.*;
-import org.apache.commons.lang.NotImplementedException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -477,20 +476,29 @@ public class MiniAmieRule extends Rule {
                 ] : this.getHead()[OBJECT_POSITION] ;
     }
 
-    static selectivityMethod Selectivity ;
+    static selectivityMethod SelectivityForBody;
+    static selectivityMethod SelectivityForHead;
 
-    public static void setSelectivity(selectivityMethod selectivity) {
-        Selectivity = selectivity;
+    public static void setSelectivityForBody(selectivityMethod selectivityForBody) {
+        SelectivityForBody = selectivityForBody;
     }
 
-    public static selectivityMethod getSelectivity() {
-        return Selectivity ;
+    public static selectivityMethod getSelectivityForBody() {
+        return SelectivityForBody;
+    }
+
+    public static void setSelectivityForHead(selectivityMethod selectivityForHead) {
+        SelectivityForHead = selectivityForHead;
+    }
+
+    public static selectivityMethod getSelectivityForHead() {
+        return SelectivityForHead;
     }
 
     public double HeadToBodySelectivity() {
         // Head to body
         try {
-            return Selectivity.selectivity(
+            return SelectivityForHead.selectivity(
                     this.getHead(),
                     this.GetFirstSortedBodyAtom(),
                     HeadToBodyJoinVariable()
@@ -521,7 +529,7 @@ public class MiniAmieRule extends Rule {
         for (int atomNextId = 1 ; atomNextId <= this.getBody().size() - 1 ; atomNextId++) {
             int[] atomNext = GetSortedBodyAtom(atomNextId);
             int joinVariable = atomPrev[joinVariablePosition] ;
-            bodySelectivity *= Selectivity.selectivity(
+            bodySelectivity *= SelectivityForBody.selectivity(
                     atomNext,
                     atomPrev,
                     joinVariable
@@ -541,10 +549,16 @@ public class MiniAmieRule extends Rule {
 
 
     public double ComputeSupportApproximation() {
-
         if (this.getBody().isEmpty())
-            return this.HeadSize() ;
-        return this.HeadSize() * this.HeadToBodySelectivity() * this.BodySelectivity() ;
+            return this.HeadSize();
+        double h2bs = this.HeadToBodySelectivity();
+        if (h2bs > 0.0) {
+            double bs = this.BodySelectivity();
+            if (bs > 0.0)
+                return this.HeadSize() * h2bs * bs;
+        }
+
+        return 0.0;
     }
 
     public double HeadCoverageApproximation() {

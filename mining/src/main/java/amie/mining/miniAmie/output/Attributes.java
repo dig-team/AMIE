@@ -107,7 +107,7 @@ public class Attributes {
             atomToNextAttributes.put(JOIN_VARIABLE_POSITION, joinVariablePosition+"");
             atomToNextAttributes.put(JOIN_VARIABLE, joinVariable+"");
 
-            double prevToNextSelectivity = MiniAmieRule.getSelectivity().selectivity(
+            double prevToNextSelectivity = MiniAmieRule.getSelectivityForBody().selectivity(
                     atomNext,
                     atomPrev,
                     joinVariable
