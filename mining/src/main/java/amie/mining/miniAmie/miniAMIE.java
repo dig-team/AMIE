@@ -311,11 +311,12 @@ public abstract class miniAMIE {
         //return this.HeadSize() * this.HeadToBodySelectivity() * this.BodySelectivity() ;
         int headR = candidate.getHeadRelationBS();
         if (Kb.isFunctional(headR)) {
-            candidate.setPcaEstimation(candidate.HeadToBodySelectivity());
+            candidate.setPcaEstimation(candidate.functionalConfidenceApproximation());
         } else {
-            candidate.setPcaEstimation(candidate.ClosureFactor());
+            candidate.setPcaEstimation(candidate.invFunctionalConfidenceApproximation());
         }
     }
+
 
     private static ExplorationResult ExploreOpenChildren(MiniAmieRule rule,
                                                          ExplorationResult explorationResult) {

@@ -478,6 +478,7 @@ public class MiniAmieRule extends Rule {
 
     static selectivityMethod SelectivityForBody;
     static selectivityMethod SelectivityForHead;
+    static selectivityMethod SelectivityForConf = new SurvivalRateSelectivity();
 
     public static void setSelectivityForBody(selectivityMethod selectivityForBody) {
         SelectivityForBody = selectivityForBody;

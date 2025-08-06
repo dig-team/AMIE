@@ -173,6 +173,37 @@ public class MiniAmieClosedRule extends MiniAmieRule {
         return closureFactor;
     }
 
+    protected double functionalConfidenceApproximation() {
+        // Head to body
+        try {
+            return SelectivityForConf.selectivity(
+                    this.GetFirstSortedBodyAtom(),
+                    this.getHead(),
+                    HeadToBodyJoinVariable()
+            );
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("MiniAmieRule "+ this + " raw " + utils.RawBodyHeadToString(
+                    utils.SortPerfectPathBody(this), this.getHead()) + " instantiated pos in head "
+                    + this.instantiatedParameterPositionInHead, e) ;
+        }
+    }
+
+    protected double invFunctionalConfidenceApproximation() {
+        int var = this.isAcyclicInstantiated() ? this.getHead()[
+                utils.NextPosition(instantiatedParameterPositionInHead)
+                ] : this.getHead()[SUBJECT_POSITION];
+        int[] lastBodyAtom = this.GetLastSortedBodyAtom();
+        if (lastBodyAtom[0] == var || lastBodyAtom[2] == var) {
+            return SelectivityForConf.selectivity(
+                    lastBodyAtom,
+                    this.getHead(),
+                    var
+            );
+        } else {
+            return functionalConfidenceApproximation();
+        }
+    }
+
     @Override
     public double ComputeSupportApproximation() {
         return super.ComputeSupportApproximation() * this.ClosureFactor();
