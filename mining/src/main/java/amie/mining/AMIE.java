@@ -1237,6 +1237,7 @@ public class AMIE {
                         AMIE.outputRules(miner, rules);
                     }
                 }
+                System.exit(0);
             }
         });
 
