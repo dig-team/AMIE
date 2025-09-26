@@ -31,9 +31,21 @@ public class Dataset {
 		String train = basePath + "train.tsv";
 		String valid = basePath + "valid.tsv";
 		String test = basePath + "test.tsv";
-		this.training = new KB();
-		this.training.load(new File(train), new File(valid));
+        // We accept valid.tsv or validation.tsv as input
+        // The validation file is optional
+        File validFile = new File(valid);
+        if (!validFile.exists()) {
+            valid = basePath + "validation.tsv";
+            validFile = new File(valid);
+        }
 
+		this.training = new KB();
+        File trainFile = new File(train);
+        if (validFile.exists()) {
+            this.training.load(trainFile, validFile);
+        } else {
+            this.training.load(trainFile);
+        }
 		this.testing = new LinkedHashMap<>();
 		for (int r : this.training.getRelations()) {
 			this.testing.put(r, new ArrayList<>());

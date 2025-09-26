@@ -1221,15 +1221,6 @@ public class AMIE {
                     if (!Files.exists(Paths.get(GlobalSearchResult.OutputConfigurationCsvPath))) {
                         System.err.println("Ending miniAMIE gracefully due to premature termination");
                         miniAMIE.outputRules();
-                        GlobalSearchResult.PrintGlobalSearchResultToCSV(
-                                maxDepth,
-                                pruningMetric,
-                                minSup,
-                                minHeadCover,
-                                -1, // This suggests the program did
-                                System.currentTimeMillis() - startTime,
-                                SearchSpaceSize
-                        );
                     }
                 } else {
                     if (miner.hasBeenInterrupted()) {
@@ -1237,7 +1228,15 @@ public class AMIE {
                         AMIE.outputRules(miner, rules);
                     }
                 }
-                System.exit(0);
+                GlobalSearchResult.PrintGlobalSearchResultToCSV(
+                        maxDepth,
+                        pruningMetric,
+                        minSup,
+                        minHeadCover,
+                        -1, // This suggests the program did
+                        System.currentTimeMillis() - startTime,
+                        SearchSpaceSize
+                );
             }
         });
 
@@ -1263,16 +1262,6 @@ public class AMIE {
         Announce.done("Total time " + formatDuration(miningTime + loadingTime));
 
         System.out.println("Used memory (peak) " + PeakMemory() + " kilobytes");
-
-        GlobalSearchResult.PrintGlobalSearchResultToCSV(
-                maxDepth,
-                pruningMetric,
-                minSup,
-                minHeadCover,
-                miner.nThreads,
-                miningTime,
-                SearchSpaceSize
-        );
 
         System.out.println(rules.size() + " rules mined.");
     }

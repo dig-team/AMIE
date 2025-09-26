@@ -12,6 +12,7 @@ import amie.data.KB;
 import amie.data.Schema;
 import amie.data.javatools.datatypes.Pair;
 import amie.data.javatools.filehandlers.TSVFile;
+import amie.rules.format.FastLocaleDouble;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
@@ -32,8 +33,7 @@ public class AMIEParser {
         Pair<List<int[]>, int[]> rulePair = kb.rule(s);
         if (rulePair == null)
             return null;
-        Rule resultRule = new Rule(rulePair.second, rulePair.first, 0, kb);
-        return resultRule;
+        return new Rule(rulePair.second, rulePair.first, 0, kb);
     }
 
     public static void normalizeRule(Rule q, KB kb) {
@@ -44,7 +44,7 @@ public class AMIEParser {
                 if (Schema.isVariable(triple[i])) {
                     Character replace = charmap.get(triple[i]);
                     if (replace == null) {
-                        replace = new Character(c);
+                        replace = Character.valueOf(c);
                         charmap.put(triple[i], replace);
                         c = (char) (c + 1);
                     }
@@ -60,7 +60,7 @@ public class AMIEParser {
             fileObj.next(); // Ignore the header
             for (List<String> record : fileObj) {
                 Rule rule = rule(record.get(0), kb);
-                rule.setSupport(Double.parseDouble(record.get(4)));
+                rule.setSupport(FastLocaleDouble.parse(record.get(4)));
                 rule.setBodySize(Long.parseLong(record.get(5)));
                 rule.setPcaBodySize(Long.parseLong(record.get(6)));
                 if (rule != null)
@@ -76,7 +76,7 @@ public class AMIEParser {
             for (List<String> record : fileObj) {
                 Rule rule = anyburlRule(record.get(3), kb);
                 if (rule != null) {
-                    rule.setSupport(Double.parseDouble(record.get(1)));
+                    rule.setSupport(FastLocaleDouble.parse(record.get(1)));
                     rule.setBodySize(Long.parseLong(record.get(0)));
                     rule.setPcaBodySize(Long.parseLong(record.get(0)));
                     result.add(rule);
