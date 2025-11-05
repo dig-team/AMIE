@@ -6,6 +6,7 @@ import amie.mining.assistant.MiningAssistant;
 import amie.rules.PruningMetric;
 import amie.rules.Rule;
 import it.unimi.dsi.fastutil.ints.*;
+import org.eclipse.rdf4j.query.algebra.Min;
 
 
 import java.util.*;
@@ -31,7 +32,7 @@ public abstract class utils {
     public static final String commaSep = ",";
     public static String bodySep = ";";
     public static String atomSep = " ";
-    public static final int MaxConstantsInExploration = 5;
+    public static final int MaxConstantsInExploration = 2;
 
     /**
      * It computes the PCA denominator of the provided rule
@@ -102,6 +103,7 @@ public abstract class utils {
             if (Kb.relationSize(relation) >= MinSup)
                 relations.add(relation);
         }
+        System.out.println(relations.size() + " relations with support higher than " + MinSup);
         return relations;
     }
 

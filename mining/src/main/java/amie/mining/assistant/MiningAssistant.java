@@ -269,7 +269,7 @@ public class MiningAssistant {
 		this.miningOperators = new LinkedList<>();
 		computeOperatorHierarchy();
 		this.formatter = RuleFormatterFactory.getDefaultFormatter(false);
-		this.maxConstantsInExploration = 5;
+		this.maxConstantsInExploration = 2;
 	}
 
 	/**

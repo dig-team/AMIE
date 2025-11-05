@@ -65,6 +65,7 @@ public abstract class miniAMIE {
         }
         @Override
         public Void call() throws Exception {
+            System.out.println("Thread " + Thread.currentThread().getId() + " is taking care of " + this.initRule.getRuleString());
             ExplorationResult exploreChildrenResult = InitExploreChildren(initRule);
             old_SearchSPace.addAndGet(exploreChildrenResult.sumExploredRules);
             searchSpace.addAndGet
@@ -185,6 +186,7 @@ public abstract class miniAMIE {
             RunSearchTreeMultiCore(initRulesUninstantiated, finalRulesUninstantiated);
             if (EnableConstants) {
                 System.out.println("Exploring acyclic instantiated rules...");
+                System.out.println("initRulesInstantiatedParameter (size): " + initRulesInstantiatedParameter.size());
                 RunSearchTreeMultiCore(initRulesInstantiatedParameter, finalRulesAcyclicInstantiatedVariables);
             }
         }
@@ -266,7 +268,7 @@ public abstract class miniAMIE {
     }
 
     private static ExplorationResult ExploreClosedChildren(MiniAmieRule rule) {
-
+        System.out.println("Extending rule " + rule.getRuleString() + " with closed atoms");
         ArrayList<MiniAmieClosedRule> keptRules = new ArrayList<>();
         int searchSpaceEstimatedSize = 0;
         int searchSpaceEstimatedAdjustedWithBidirectionalitySize = 0;
@@ -320,7 +322,6 @@ public abstract class miniAMIE {
 
     private static ExplorationResult ExploreOpenChildren(MiniAmieRule rule,
                                                          ExplorationResult explorationResult) {
-
         ArrayList<MiniAmieRule> openChildren = rule.AddDangling();
         if (openChildren != null) {
             explorationResult.sumExploredRules += openChildren.size() * CORRECTION_FACTOR_OPENING;
@@ -341,6 +342,7 @@ public abstract class miniAMIE {
     }
 
     private static ExplorationResult InitExploreChildren(MiniAmieRule rule) {
+        System.out.println("Exploring " + rule.getRuleString());
         ExplorationResult explorationResult = ExploreClosedChildren(rule) ;
         return ExploreOpenChildren(rule, explorationResult) ;
     }

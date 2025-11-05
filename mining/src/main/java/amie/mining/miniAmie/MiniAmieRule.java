@@ -125,6 +125,8 @@ public class MiniAmieRule extends Rule {
         if (relations.isEmpty()) {
             return null;
         }
+        System.out.println("Add- dangling Checking " + relations.size() + " relations");
+        long startP = System.currentTimeMillis();
         for (int relation : relations) {
             MiniAmieRule openRule = new MiniAmieRule(this,
                     unboundParameter, relation, lastOpenParameter, unboundParameter);
@@ -145,6 +147,7 @@ public class MiniAmieRule extends Rule {
             if (openRule.IsNotPruned())
                 openRules.add(openRule);
         }
+        System.out.println(openRules.size() + " open rules added in first phrase took " + (System.currentTimeMillis() - startP));
 
         relations = this.getRealLength() <= 1 ?  this.promisingRelations() :
                     this.promisingRelationsFromOverlapTables(lastTriplePattern[0], joinPositionInRule, SUBJECT_POSITION);
@@ -168,6 +171,7 @@ public class MiniAmieRule extends Rule {
             if (openRuleAlt.IsNotPruned())
                 openRules.add(openRuleAlt);
         }
+        System.out.println(openRules.size() + " total open rules added in second phase, took " + (System.currentTimeMillis() - startP));
         return openRules;
     }
 
@@ -188,8 +192,18 @@ public class MiniAmieRule extends Rule {
         }
 
         if (overlapIndex.containsKey(predId)) {
+            System.out.println("promisingRelationsFromOverlapTables: Retrieving content of overlap tables");
             IntSet predicates = overlapIndex.get(predId).keySet();
-            promisingPredicates.addAll(predicates);
+            if (PM == PruningMetric.Support || PM == PruningMetric.ApproximateSupport) {
+                for (int predicate : predicates) {
+                    if (overlapIndex.get(predId).get(predicate) >= MinSup)
+                        promisingPredicates.add(predicate);
+                }
+            } else {
+                promisingPredicates.addAll(predicates);
+            }
+            System.out.println("Retrieving " + promisingPredicates.size());
+
             return promisingPredicates;
         } else {
             return this.promisingRelations();
@@ -250,14 +264,17 @@ public class MiniAmieRule extends Rule {
         if (relations.isEmpty()) {
             return null;
         }
-
+        System.out.println("AddClosureToAcyclic: exploring" + relations.size()  + " relations");
+        long startP = System.currentTimeMillis();
         for (int relation : relations) {
             // Instantiated rule
             List<int[]> newAtomQuery = new ArrayList<>();
             int[] newAtom = new int[]{unboundParameter, relation, lastOpenParameter};
             newAtomQuery.add(newAtom);
             // TODO reuse previously instantiated heads if possible
+            long startP1 = System.currentTimeMillis();
             IntList objectConstants = decreasingKeys(kb.countProjectionBindings(newAtom, Collections.EMPTY_LIST, unboundParameter));
+            System.out.println("Getting the constants took " + (System.currentTimeMillis() - startP1));
             //IntSet objectConstants = Kb.selectDistinct(lastOpenParameter, newAtomQuery);
             int k = 0;
             for (int constant : objectConstants) {
@@ -282,6 +299,8 @@ public class MiniAmieRule extends Rule {
                     closedRules.add(closedRule);
             }
         }
+        System.out.println(closedRules.size() + " closed rules added in first phrase, took " + (System.currentTimeMillis() - startP)  + "ms" );
+
         relations = this.getRealLength() <= 1 ?  this.promisingRelations() :
                 this.promisingRelationsFromOverlapTables(lastTriplePattern[1], joinPositionInRule, SUBJECT_POSITION);
 
@@ -291,7 +310,9 @@ public class MiniAmieRule extends Rule {
             int[] newAtomAlt = new int[]{lastOpenParameter, relation, unboundParameter} ;
             newAtomQueryAlt.add(newAtomAlt);
             // TODO reuse previously instantiated heads if possible
+            long startP1 = System.currentTimeMillis();
             IntList objectConstantsAlt = decreasingKeys(kb.countProjectionBindings(newAtomAlt, Collections.EMPTY_LIST, lastOpenParameter));
+            System.out.println("Getting the constants (alt) took " + (System.currentTimeMillis() - startP1));
             //IntSet objectConstantsAlt = Kb.selectDistinct(lastOpenParameter, newAtomQueryAlt);
             for (int constant : objectConstantsAlt) {
                 MiniAmieClosedRule closedRule = new MiniAmieClosedRule(this,
@@ -313,6 +334,8 @@ public class MiniAmieRule extends Rule {
                     closedRules.add(closedRule);
             }
         }
+        System.out.println(closedRules.size() + " total closed rules after second phrase, took " +
+                (System.currentTimeMillis() - startP) + " ms");
 
         return closedRules;
     }
@@ -337,7 +360,7 @@ public class MiniAmieRule extends Rule {
         if (relations.isEmpty()) {
             return null;
         }
-
+        long startP = System.currentTimeMillis();
         for (int relation : relations) {
             MiniAmieClosedRule closedRule = new MiniAmieClosedRule(this,
                     joinSubject, relation, joinObject);
@@ -357,6 +380,9 @@ public class MiniAmieRule extends Rule {
             if (closedRule.IsNotPruned())
                 closedRules.add(closedRule);
         }
+
+        System.out.println(closedRules.size() + " closed rules mined up to phase 1 =, took "
+                + (System.currentTimeMillis() - startP) + "ms");
 
         relations = this.getRealLength() <= 1 ?  this.promisingRelations() :
                 this.promisingRelationsFromOverlapTables(headAtom[1], SUBJECT_POSITION, OBJECT_POSITION);
@@ -381,7 +407,8 @@ public class MiniAmieRule extends Rule {
             if (closedRuleAlt.IsNotPruned())
                 closedRules.add(closedRuleAlt);
         }
-
+        System.out.println(closedRules.size() + " total closed rules mined in second phase, took "
+                + (System.currentTimeMillis() - startP) + "ms");
         return closedRules;
     }
 
