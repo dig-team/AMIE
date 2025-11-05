@@ -1233,7 +1233,7 @@ public class AMIE {
                         pruningMetric,
                         minSup,
                         minHeadCover,
-                        -1, // This suggests the program did
+                        miner == null? -1 : miner.nThreads , // This tells us if the program ended prematurely
                         System.currentTimeMillis() - startTime,
                         SearchSpaceSize
                 );

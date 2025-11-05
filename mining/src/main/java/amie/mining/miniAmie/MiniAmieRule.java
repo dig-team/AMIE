@@ -189,7 +189,14 @@ public class MiniAmieRule extends Rule {
 
         if (overlapIndex.containsKey(predId)) {
             IntSet predicates = overlapIndex.get(predId).keySet();
-            promisingPredicates.addAll(predicates);
+            if (PM == PruningMetric.Support || PM == PruningMetric.ApproximateSupport) {
+                for (int predicate : predicates) {
+                    if (overlapIndex.get(predId).get(predicate) >= MinSup)
+                        promisingPredicates.add(predicate);
+                }
+            } else {
+                promisingPredicates.addAll(predicates);
+            }
             return promisingPredicates;
         } else {
             return this.promisingRelations();
