@@ -1,3 +1,8 @@
+**Note**: This branch contains the implementation of MiniAMIE, a quick and dirty version of AMIE published in the paper "MiniAMIE: Quick and Dirty Rule Mining on Knowledge Graphs". This branch will be eventually merged with AMIE's main branch. Here is some important information:
+- Code to reproduce MiniAMIE's experimental evaluation: https://gitlab.inria.fr/vguerbet/benchmark-miniamie/
+- MiniAMIE+ is a version of MiniAMIE that optimizes even further predicate selection at rule refinement. This option was enabled for the very large datasets caligraph and wikidata2014 on the most exhaustive configurations. The code is available here https://github.com/dig-team/AMIE/tree/ligher-mini-amie. This branch will also be eventually merged with AMIE's main branch.
+- To use MiniAMIE you just need to add the argument `-mini' when executing the JAR file generated with this version of AMIE. 
+
 # AMIE 
 AMIE is a system to mine Horn rules on knowledge bases. A knowledge base is a collection of facts, such as e.g. 
 > wasBornIn(Elvis, Tupelo)  
