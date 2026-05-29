@@ -6,7 +6,7 @@ AMIE is a system to mine Horn rules on knowledge bases. A knowledge base is a co
 AMIE can find rules in such knowledge bases, such as for example
 > wasBornIn(x, y) & isLocatedIn(y, z) => hasNationality(x, z)
 
-These rules are accompanied by various confidence scores. “AMIE” stands for “Association Rule Mining under Incomplete Evidence”. This repository contains the latest version of AMIE, called AMIE 3.5. The versions of AMIE prior to 3.x can be found [here](https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/amie/). The code of version 3.0 (used for our [2020 ESWC publication](https://luisgalarraga.de/docs/amie3.pdf)) can be found [here](https://github.com/dig-team/amie/tree/v3.0).
+These rules are accompanied by various confidence scores. “AMIE” stands for “Association Rule Mining under Incomplete Evidence”. This repository contains the latest version of AMIE, called AMIE 3.5. The versions of AMIE prior to 3.x can be found [here](https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/amie/). The code of version 3.0 (used for our [2020 ESWC publication](https://luisgalarraga.de/docs/amie3.pdf)) can be found [here](https://github.com/dig-team/amie/tree/v3.0). AMIE is part of the (YAGO ecosystem)[https://yago-knowledge.org/].
 
 ## Input files
 
