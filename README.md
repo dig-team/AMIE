@@ -1,3 +1,4 @@
+<a href="https://www.inria.fr/en" rel="some text">![Powered by Inria](https://img.shields.io/badge/powered%20by-INRIA-orange.svg?style=flat&colorA=384257&colorB=E23324)</a> [![YAGO Ecosystem](https://img.shields.io/badge/part_of-YAGO_ecosystem-yellow)](https://yago-knowledge.org/ecosystem)
 # AMIE 
 AMIE is a system to mine Horn rules on knowledge bases. A knowledge base is a collection of facts, such as e.g. 
 > wasBornIn(Elvis, Tupelo)  
