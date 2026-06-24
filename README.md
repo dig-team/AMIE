@@ -30,11 +30,6 @@ In case of memory issues, try to increase the virtual machine's memory resources
 
 `MAX_HEAP_SPACE` depends on your input size and the system's available memory. The package also contains the utilities to generate and evaluate predictions from the rules mined by AMIE. Without additional arguments AMIE thresholds with PCA confidence 0.1 and head coverage 0.01. You can change these default settings. Run `java -jar [AMIE-JAR] -h` (without an input file) to see a detailed description of the available options.
 
-## Mini-AMIE
-
-MiniAMIE is a quick and dirty version of AMIE introduced by Galárraga et al., 2026. To use MiniAMIE you just need to add the argument `-mini' when executing the JAR file generated with this version of AMIE. 
-The code to reproduce MiniAMIE's experimental evaluation is available at https://gitlab.inria.fr/vguerbet/benchmark-miniamie/. Have a look at the branch `miniamie' for more details.
-
 ### PyClause Integration
 To output rules that can be used by the PyClause library, you need to run AMIE with these additional parameters:
 
@@ -77,6 +72,11 @@ __NOTE__:
 - Custom cache policies can be implemented in `amie/data/remote/cachepolicies` package.
 - Cache is saved locally in the cache directory using the knowledge graph file name and run options.
 
+## Mini-AMIE
+
+MiniAMIE is a quick and dirty version of AMIE introduced by Galárraga et al., 2026. To use MiniAMIE you just need to add the argument `-mini` when executing the JAR file generated with this version of AMIE. 
+The code to reproduce MiniAMIE's experimental evaluation is available at https://gitlab.inria.fr/vguerbet/benchmark-miniamie/. Have a look at the branch `miniamie` for more details.
+
 ## Deploying AMIE
 
 If you want to modify the code of AMIE, you need
@@ -95,15 +95,15 @@ AMIE is managed with [Maven](https://maven.apache.org/), therefore to deploy you
 
 ## Publications
 
-> Luis Galárraga, Julianne Guerbette, Isseïnie Sinouvassane, Paul Viallard:
-> ["MiniAMIE: Quick and Dirty Rule Mining on Knowledge Bases"](https://luisgalarraga.de/docs/IJCAI_2024_demo_paper.pdf](https://dl.acm.org/doi/10.1145/3774904.3792941)
+> Luis Galárraga, Julianne Guerbette, Isseïnie Sinouvassane, Paul Viallard: <br>
+> ["MiniAMIE: Quick and Dirty Rule Mining on Knowledge Bases"](https://dl.acm.org/doi/10.1145/3774904.3792941)
 > Short paper at The Web Conference (WWW), 2026
 
-> Patrick Betz, Luis Galárraga, Simon Ott, Christian Meilicke, Fabian M. Suchanek:
+> Patrick Betz, Luis Galárraga, Simon Ott, Christian Meilicke, Fabian M. Suchanek: <br>
 > ["PyClause-Simple and Efficient Rule Handling for Knowledge Graphs"](https://luisgalarraga.de/docs/IJCAI_2024_demo_paper.pdf)
-> Demo paper at the International Conference on Artificial Intelligence (IJCAI), 2024 ["Software"](https://github.com/symbolic-kg/PyClause)
+> Demo paper at the International Conference on Artificial Intelligence (IJCAI), 2024 [["Software"]](https://github.com/symbolic-kg/PyClause)
 
-> Jonathan Lajus, Luis Galárraga, Fabian M. Suchanek:  
+> Jonathan Lajus, Luis Galárraga, Fabian M. Suchanek: <br>
 > [“Fast and Exact Rule Mining with AMIE 3”  ](https://suchanek.name/work/publications/eswc-2020-amie-3.pdf)  
 > Full paper at the Extended Semantic Web Conference (ESWC), 2020
 
