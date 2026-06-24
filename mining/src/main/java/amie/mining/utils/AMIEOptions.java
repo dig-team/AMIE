@@ -15,180 +15,207 @@ import java.util.List;
  */
 public interface AMIEOptions {
 
-        Option INVALIDATE_CACHE = new Option("invalidateCache", false, "Ignores previously saved cache.");
-        Option CACHE = new Option("cache", false, "Enables query caching.");
-        Option CSIZE = new Option("csize", true,
-                        String.format("Enables cache and set cache size ; default %s queries",
-                                        Caching.DEFAULT_CACHE_SIZE));
-        Option CPOL = new Option("cpol", true,
-                        String.format("Enables cache and set cache policy ; default %s policy",
-                                        Caching.DEFAULT_POLICY));
-        Option REMOTE_KB_MODE_SERVER = new Option("server", "Enables server mode.");
-        Option REMOTE_KB_MODE_CLIENT = new Option("client", "Enables client mode.");
-        Option SERVER_ADDRESS = new Option("serverAddress", true,
-                        String.format("Enables client mode and sets server address (default is %s)",
-                                        AbstractKB.DEFAULT_SERVER_ADDRESS));
-        Option PORT = new Option("port", true,
-                        String.format("Enables server mode with default layer type (%s) and sets port (default is %s)",
-                                        AbstractKB.GetDefaultCommunicationLayerType(),
-                                        AbstractKB.DEFAULT_PORT));
+    Option MINI_AMIE = new Option("mini", "Runs mini-AMIE.") ;
+    Option MINI_AMIE_COMPARE_TO_GROUND_TRUTH = new Option("compareToGT", true ,
+            "Compares mini-AMIE rule set to a list of rules (path as parameter).") ;
 
-        Option LIVE_METRICS = new Option("liveMetrics", "Enable live metrics.");
+    Option MINI_AMIE_VERBOSE = new Option("miniVerbose", "Shows more information during the mining " +
+            "process.") ;
 
-        Option MIN_SUPPORT = new Option("mins", "min-support", true,
-                        "Minimum absolute support. Default: 100 positive examples");
+    Option MINI_AMIE_ENABLE_VARIABLE_SWITCH = new Option("enableVariableSwitch",
+            "Enable AnyBurl-style variable switching within atoms in mini-AMIE. \n" +
+                    "Ex. x <r1> a , b <r2> a , b <r3> y => x <rh> y") ;
 
-        Option MIN_INITIAL_SUPPORT = new Option("minis", "min-initial-support", true,
-                        "Minimum size of the relations to be considered as head relations. Default: 100 (facts or " +
-                                        "entities depending on the bias)");
+    Option MINI_AMIE_USE_DIRECTIONAL_SELECTIVITY = new Option("useDirectionalSelectivity",
+            "Enable directional selectivity.") ;
 
-        Option MIN_HEAD_COVERAGE = new Option("minhc", "min-head-coverage", true,
-                        "Minimum head coverage. Default: 0.01");
+    Option MINI_AMIE_COMPUTE_ACTUAL_METRICS = new Option("computeActualMetrics", false,
+            "Applicable only to mini-AMIE: compute real support and PCA confidence for the mined rules. False by default");
 
-        Option PRUNING_METRIC = new Option("pm", "pruning-metric", true,
-                        "Metric used for pruning of intermediate queries: support|headcoverage. Default: " +
-                                        "headcoverage");
+    Option GLOBAL_SEARCH_RESULT_PATH = new Option("searchInfoOutputPath", true,
+            "Sets the path to a CSV containing general information on the run (ex. search time, memory " +
+                    "peak value). Default ./run-<TIMESTAMP>.csv") ;
 
-        Option OUTPUT_AT_END = new Option("oute", "output-at-end", false,
-                        "Print the rules at the end and not while they are discovered. Default: false");
+    Option INVALIDATE_CACHE = new Option("invalidateCache", false, "Ignores previously saved cache.");
+    Option CACHE = new Option("cache", false, "Enables query caching.");
+    Option CSIZE = new Option("csize", true,
+            String.format("Enables cache and set cache size ; default %s queries", Caching.DEFAULT_CACHE_SIZE));
+    Option CPOL = new Option("cpol", true,
+            String.format("Enables cache and set cache policy ; default %s policy", Caching.DEFAULT_POLICY));
+    Option REMOTE_KB_MODE_SERVER = new Option("server", "Enables server mode.") ;
+    Option REMOTE_KB_MODE_CLIENT = new Option("client", "Enables client mode.") ;
+    Option SERVER_ADDRESS = new Option("serverAddress", true,
+            String.format("Enables client mode and sets server address (default is %s)",
+                    AbstractKB.DEFAULT_SERVER_ADDRESS));
+    Option PORT = new Option("port", true,
+            String.format("Enables server mode with default layer type (%s) and sets port (default is %s)",
+                    AbstractKB.GetDefaultCommunicationLayerType(),
+                    AbstractKB.DEFAULT_PORT));
 
-        Option OUTPUT_FORMAT = new Option("ofmt", "output-format", true,
-                        "Controls the rules' output format. Default: TSV, all fields, atoms as triples");
+    Option LIVE_METRICS = new Option("liveMetrics", "Enable live metrics.") ;
 
-        Option BODY_EXCLUDED = new Option("bexr", "body-excluded-relations", true,
-                        "Do not use these relations as atoms in the body of rules. Example: <livesIn>,<bornIn>");
+    Option MIN_SUPPORT = new Option("mins", "min-support", true,
+            "Minimum absolute support. Default: 100 positive examples");
 
-        Option HEAD_EXCLUDED = new Option("hexr", "head-excluded-relations", true,
-                        "Do not use these relations as atoms in the head of rules (incompatible with " +
-                                        "head-target-relations). Example: <livesIn>,<bornIn>");
+    Option MIN_INITIAL_SUPPORT = new Option("minis", "min-initial-support", true,
+            "Minimum size of the relations to be considered as head relations. Default: 100 (facts or " +
+                    "entities depending on the bias)");
 
-        Option INSTANTIATION_EXCLUDED = new Option("iexr", "instantiation-excluded-relations", true,
-                        "Do not instantiate these relations. Should be used with -fconst or -const (incompatible with" +
-                                        " instantiation-target-relations). Example: <livesIn>,<bornIn>");
+    Option MIN_HEAD_COVERAGE = new Option("minhc", "min-head-coverage", true,
+            "Minimum head coverage. Default: 0.01");
 
-        Option HEAD_TARGET_RELATIONS = new Option("htr", "head-target-relations", true,
-                        "Mine only rules with these relations in the head. Provide a list of relation names separated "
-                                        +
-                                        "by commas (incompatible with head-excluded-relations). Example: <livesIn>,<bornIn>");
+    Option PRUNING_METRIC = new Option("pm", "pruning-metric", true,
+            "Metric used for pruning of intermediate queries: support|headcoverage. Default: " +
+                    "headcoverage");
 
-        Option BODY_TARGET_RELATIONS = new Option("btr", "body-target-relations", true,
-                        "Allow only these relations in the body. Provide a list of relation names separated by commas "
-                                        +
-                                        "(incompatible with body-excluded-relations). Example: <livesIn>,<bornIn>");
+    Option OUTPUT_AT_END = new Option("oute", "output-at-end", false,
+            "Print the rules at the end and not while they are discovered. Default: false");
 
-        Option INSTANTIATION_TARGET_RELATIONS = new Option("itr", "instantiation-target-relations", true,
-                        "Allow only these relations to be instantiated. Should be used with -fconst or -const. " +
-                                        "Provide a list of relation names separated by commas (incompatible with " +
-                                        "instantiation-excluded-relations). Example: <livesIn>,<bornIn>");
+    Option OUTPUT_FORMAT = new Option("ofmt", "output-format", true,
+            "Controls the rules' output format. Default: TSV, all fields, atoms as triples");
 
-        Option MAX_DEPTH = new Option("maxad", "max-depth", true,
-                        "Maximum number of atoms in the antecedent and succedent of rules. Default: 3");
+    Option BODY_EXCLUDED = new Option("bexr", "body-excluded-relations", true,
+            "Do not use these relations as atoms in the body of rules. Example: <livesIn>,<bornIn>");
 
-        Option MAX_DEPTH_CONST = new Option("maxadc", "max-depth-constants", true,
+    Option HEAD_EXCLUDED = new Option("hexr", "head-excluded-relations", true,
+            "Do not use these relations as atoms in the head of rules (incompatible with " +
+                    "head-target-relations). Example: <livesIn>,<bornIn>");
+
+    Option INSTANTIATION_EXCLUDED = new Option("iexr", "instantiation-excluded-relations", true,
+            "Do not instantiate these relations. Should be used with -fconst or -const (incompatible with" +
+                    " instantiation-target-relations). Example: <livesIn>,<bornIn>");
+
+    Option HEAD_TARGET_RELATIONS = new Option("htr", "head-target-relations", true,
+            "Mine only rules with these relations in the head. Provide a list of relation names separated " +
+                    "by commas (incompatible with head-excluded-relations). Example: <livesIn>,<bornIn>");
+
+    Option BODY_TARGET_RELATIONS = new Option("btr", "body-target-relations", true,
+            "Allow only these relations in the body. Provide a list of relation names separated by commas " +
+                    "(incompatible with body-excluded-relations). Example: <livesIn>,<bornIn>");
+
+    Option INSTANTIATION_TARGET_RELATIONS = new Option("itr", "instantiation-target-relations", true,
+            "Allow only these relations to be instantiated. Should be used with -fconst or -const. " +
+                    "Provide a list of relation names separated by commas (incompatible with " +
+                    "instantiation-excluded-relations). Example: <livesIn>,<bornIn>");
+
+    Option MAX_DEPTH = new Option("maxad", "max-depth", true,
+            "Maximum number of atoms in the antecedent and succedent of rules. Default: 3");
+
+    Option MAX_DEPTH_CONST = new Option("maxadc", "max-depth-constants", true,
                         "Maximum number of atoms in the antecedent and succedent of rules with constants (applicable to the anyburl rule biases)."
                                         + " Default: 3");
 
-        Option MIN_PCA_CONFIDENCE = new Option("minpca", "min-pca-confidence", true,
+    Option MIN_PCA_CONFIDENCE = new Option("minpca", "min-pca-confidence", true,
                         "Minimum PCA confidence threshold. This value is not used for pruning, only for filtering of the "
                                         +
                                         "results. Default: 0.0");
 
-        Option ALLOW_CONSTANTS = new Option("const", "allow-constants", false,
-                        "Enable rules with constants. Default: false");
+    Option ALLOW_CONSTANTS = new Option("const", "allow-constants", false,
+            "Enable rules with constants. Default: false");
 
-        Option ONLY_CONSTANTS = new Option("fconst", "only-constants", false,
-                        "Enforce constants in all atoms. Default: false");
 
-        Option BIAS = new Option("bias", "e-name", true,
-                        "Syntatic/semantic bias: oneVar|default|lazy|lazit|[Path to a subclass of " +
-                                        "amie.mining.assistant.MiningAssistant] Default: default (defines support and confidence in terms "
-                                        +
-                                        "of 2 head variables given an order, cf -vo)");
+    Option ONLY_CONSTANTS = new Option("fconst", "only-constants", false,
+            "Enforce constants in all atoms. Default: false");
 
-        Option COUNT_ALWAYS_ON_SUBJECT = new Option("caos", "count-always-on-subject", false,
-                        "If a single variable bias is used (oneVar), force to count support always on the subject " +
-                                        "position.");
 
-        Option N_THREADS = new Option("nc", "n-threads", true,
-                        "Preferred number of cores. Round down to the actual number of cores in the system if a " +
-                                        "higher value is provided.");
+    Option BIAS = new Option("bias", "e-name", true,
+            "Syntatic/semantic bias: oneVar|default|lazy|lazit|[Path to a subclass of " +
+                    "amie.mining.assistant.MiningAssistant] Default: default (defines support and confidence in terms " +
+                    "of 2 head variables given an order, cf -vo)");
 
-        Option MIN_STD_CONFIDENCE = new Option("minc", "min-std-confidence", true,
-                        "Minimum standard confidence threshold. "
-                                        + "This value is not used for pruning, only for filtering of the results. Default: 0.0");
 
-        Option OPTIM_CONFIDENCE_BOUNDS = new Option("optimcb", "optim-confidence-bounds", false,
-                        "Enable the calculation of confidence upper bounds to prune rules.");
+    Option COUNT_ALWAYS_ON_SUBJECT = new Option("caos", "count-always-on-subject", false,
+            "If a single variable bias is used (oneVar), force to count support always on the subject " +
+                    "position.");
 
-        Option OPTIM_FUNC_HEURISTIC = new Option("optimfh", "optim-func-heuristic", false,
-                        "Enable functionality heuristic to identify potential low confident rules for pruning.");
 
-        Option VERBOSE = new Option("verbose", false, "Maximal verbosity");
+    Option N_THREADS = new Option("nc", "n-threads", true,
+            "Preferred number of cores. Round down to the actual number of cores in the system if a " +
+                    "higher value is provided.");
 
-        Option RECURSIVITY_LIMIT = new Option("rl", "recursivity-limit", false,
-                        "Recursivity limit");
 
-        Option AVOID_UNBOUND_TYPE_ATOMS = new Option("auta", "avoid-unbound-type-atoms", false,
-                        "Avoid unbound type atoms, e.g., type(x, y), i.e., bind always 'y' to a type");
+    Option MIN_STD_CONFIDENCE = new Option("minc", "min-std-confidence", true,
+            "Minimum standard confidence threshold. "
+                    + "This value is not used for pruning, only for filtering of the results. Default: 0.1");
 
-        Option DO_NOT_EXPLOIT_MAX_LENGTH = new Option("deml", "do-not-exploit-max-length", false,
-                        "Do not exploit max length for speedup (requested by the reviewers of AMIE+). False by " +
-                                        "default.");
 
-        Option DISABLE_QUERY_REWRITING = new Option("dqrw", "disable-query-rewriting", false,
-                        "Disable query rewriting and caching.");
+    Option OPTIM_CONFIDENCE_BOUNDS = new Option("optimcb", "optim-confidence-bounds", false,
+            "Enable the calculation of confidence upper bounds to prune rules.");
 
-        Option DISABLE_PERFECT_RULES = new Option("dpr", "disable-perfect-rules", false,
-                        "Disable perfect rules.");
 
-        Option ONLY_OUTPUT = new Option("oout", "only-output", false,
-                        "If enabled, it activates only the output enhancements, that is, the confidence approximation "
-                                        +
-                                        "and upper bounds. It overrides any other configuration that is incompatible.");
+    Option OPTIM_FUNC_HEURISTIC = new Option("optimfh", "optim-func-heuristic", false,
+            "Enable functionality heuristic to identify potential low confident rules for pruning.");
 
-        Option FULL = new Option("full", "It enables all enhancements: " +
-                        "lossless heuristics and confidence approximation and upper bounds. It overrides any other configuration that is incompatible.");
 
-        Option NO_HEURISTICS = new Option("noHeuristics",
-                        "Disable functionality heuristic, should be used with the -full option");
+    Option VERBOSE = new Option("verbose", false, "Maximal verbosity");
 
-        Option NO_KB_REWRITE = new Option("noKbRewrite", "Prevent the KB to rewrite query when counting pairs");
 
-        Option NO_KB_EXISTS_DETECTION = new Option("noKbExistsDetection",
-                        "Prevent the KB to detect existential variable on-the-fly " +
-                                        "and to optimize the query");
+    Option RECURSIVITY_LIMIT = new Option("rl", "recursivity-limit", false,
+            "Recursivity limit");
 
-        Option NO_SKYLINE = new Option("noSkyline", "Disable Skyline pruning of results");
 
-        Option VARIABLE_ORDER = new Option("vo", "variableOrder", true,
-                        "Define the order of the variable in counting query among: app, fun (default), ifun");
+    Option AVOID_UNBOUND_TYPE_ATOMS = new Option("auta", "avoid-unbound-type-atoms", false,
+            "Avoid unbound type atoms, e.g., type(x, y), i.e., bind always 'y' to a type");
 
-        Option OUTPUT_FILE = new Option("ofile", "output-file", true,
+
+    Option DO_NOT_EXPLOIT_MAX_LENGTH = new Option("deml", "do-not-exploit-max-length", false,
+            "Do not exploit max length for speedup (requested by the reviewers of AMIE+). False by " +
+                    "default.");
+
+
+    Option DISABLE_QUERY_REWRITING = new Option("dqrw", "disable-query-rewriting", false,
+            "Disable query rewriting and caching.");
+
+
+    Option DISABLE_PERFECT_RULES = new Option("dpr", "disable-perfect-rules", false,
+            "Disable perfect rules.");
+
+    Option ONLY_OUTPUT = new Option("oout", "only-output", false,
+            "If enabled, it activates only the output enhancements, that is, the confidence approximation " +
+                    "and upper bounds. It overrides any other configuration that is incompatible.");
+
+    Option FULL = new Option("full", "It enables all enhancements: " +
+            "lossless heuristics and confidence approximation and upper bounds. It overrides any other configuration that is incompatible.");
+
+    Option NO_HEURISTICS = new Option("noHeuristics", "Disable functionality heuristic, should be used with the -full option");
+
+    Option NO_KB_REWRITE = new Option("noKbRewrite", "Prevent the KB to rewrite query when counting pairs");
+
+    Option NO_KB_EXISTS_DETECTION = new Option("noKbExistsDetection", "Prevent the KB to detect existential variable on-the-fly " +
+            "and to optimize the query");
+
+    Option NO_SKYLINE = new Option("noSkyline", "Disable Skyline pruning of results");
+
+    Option VARIABLE_ORDER = new Option("vo", "variableOrder", true,
+            "Define the order of the variable in counting query among: app, fun (default), ifun");
+
+    Option OUTPUT_FILE = new Option("ofile", "output-file", true,
                         "Output file to store the rules");
 
-        Option ENABLE_STD_CONF = new Option("enstd", "enable-std-conf", false,
+    Option ENABLE_STD_CONF = new Option("enstd", "enable-std-conf", false,
                         "Calculate standard confidence");
 
-        Option OMMIT_PCA_CONF = new Option("ompca", "ommit-pca-conf", false,
+    Option OMMIT_PCA_CONF = new Option("ompca", "ommit-pca-conf", false,
                         "Do not calculate PCA confidence");
 
-        Option ADAPTATIVE_INSTANTIATIONS = new Option("optimai", "adaptive-instantiations", false,
-                        "Prune instantiated rules that decrease too much the support of their parent rule (ratio 0.2)");
+    Option ADAPTATIVE_INSTANTIATIONS = new Option("optimai", "adaptive-instantiations", false,
+            "Prune instantiated rules that decrease too much the support of their parent rule (ratio 0.2)");
 
-        Option MULTILINGUAL = new Option("mlg", "multilingual", false,
-                        "Parse labels language as new facts");
+    Option MULTILINGUAL = new Option("mlg", "multilingual", false,
+            "Parse labels language as new facts");
 
-        Option DELIMITER = new Option("d", "delimiter", true,
-                        "Separator in input files (default: TAB)");
+    Option DELIMITER = new Option("d", "delimiter", true,
+            "Separator in input files (default: TAB)");
 
-        interface Bias {
+
+    interface Bias {
                 String ONE_VAR = "oneVar";
                 String DEFAULT = "default";
                 String SIGNATURED = "signatured";
                 String LAZY = "lazy";
                 String LAZIT = "lazit";
 
-        }
+    }
 
         /**
          * List of options that do not influence remote KB queries (used for cache
@@ -209,44 +236,51 @@ public interface AMIEOptions {
                         DISABLE_QUERY_REWRITING,
                         DELIMITER);
 
-        static String FormatConfigIndentifier(CommandLine cli) {
-                String result = "";
-                String config = Arrays.toString(cli.getArgs());
-                config = config.replace("/", "~");
-                Option[] optionsArr = cli.getOptions();
-                String optionCon = "";
-                for (int k = 0; k < optionsArr.length; k++) {
-                        // Checking if option changes queries to remote KB or their results
-                        if (ignoredByCacheOptions.contains(optionsArr[k]))
-                                continue;
-                        optionCon += optionsArr[k].getOpt();
-                        String value = optionsArr[k].getValue();
-                        if (value != null)
-                                optionCon += "&" + value;
-                        if (k < optionsArr.length - 1)
-                                optionCon += "+";
-                }
-                if (!(cli.getArgs().length == 0))
-                        result += config;
-                if (!(cli.getArgs().length == 0) && !optionCon.isEmpty())
-                        result += "-";
-                result += optionCon;
-                return result;
+    static String FormatConfigIndentifier(CommandLine cli) {
+        String result = "";
+        String config = Arrays.toString(cli.getArgs());
+        config = config.replace("/","~")  ;
+        Option[] optionsArr = cli.getOptions();
+        String optionCon = "" ;
+        for(int k = 0 ; k < optionsArr.length ; k++) {
+            // Checking if option changes queries to remote KB or their results
+            if (ignoredByCacheOptions.contains(optionsArr[k]))
+                continue;
+            optionCon += optionsArr[k].getOpt() ;
+            String value = optionsArr[k].getValue() ;
+            if (value != null)
+                optionCon += "&"+value ;
+            if (k < optionsArr.length - 1)
+                optionCon += "+" ;
         }
+        if(!(cli.getArgs().length == 0))
+            result += config ;
+        if(!(cli.getArgs().length == 0) && !optionCon.isEmpty())
+            result += "-" ;
+        result += optionCon ;
+        return result  ;
+    }
 
-        /**
-         * Define the command line options supported by AMIE.
-         *
-         * @return Options for AMIE.
-         */
-        static Options DefineArgOptions() {
-                // create the Options
-                Options options = new Options();
+    /**
+     * Define the command line options supported by AMIE.
+     *
+     * @return Options for AMIE.
+     */
+    static Options DefineArgOptions() {
+        // create the Options
+        Options options = new Options();
 
+                options.addOption(MINI_AMIE) ;
+                options.addOption(GLOBAL_SEARCH_RESULT_PATH) ;
+                options.addOption(MINI_AMIE_COMPARE_TO_GROUND_TRUTH) ;
+                options.addOption(MINI_AMIE_VERBOSE) ;
                 options.addOption(MIN_STD_CONFIDENCE);
                 options.addOption(MIN_SUPPORT);
                 options.addOption(MIN_INITIAL_SUPPORT);
                 options.addOption(MIN_HEAD_COVERAGE);
+                options.addOption(MINI_AMIE_ENABLE_VARIABLE_SWITCH);
+                options.addOption(MINI_AMIE_USE_DIRECTIONAL_SELECTIVITY);
+                options.addOption(MINI_AMIE_COMPUTE_ACTUAL_METRICS);
                 options.addOption(PRUNING_METRIC);
                 options.addOption(OUTPUT_AT_END);
                 options.addOption(BODY_EXCLUDED);
@@ -301,97 +335,91 @@ public interface AMIEOptions {
                 return options;
         }
 
-        String AMIE_CMD_LINE_SYNTAX = "AMIE [OPTIONS] <TSV FILES>";
-        String AMIE_PLUS_CMD_LINE_SYNTAX = "AMIE+ [OPTIONS] <.tsv INPUT FILES>";
-        String AMIE_PLUS = "AMIE+";
+    String AMIE_CMD_LINE_SYNTAX = "AMIE [OPTIONS] <TSV FILES>" ;
+    String AMIE_PLUS_CMD_LINE_SYNTAX = "AMIE+ [OPTIONS] <.tsv INPUT FILES>" ;
+    String AMIE_PLUS = "AMIE+" ;
 
-        static boolean isClientMode(CommandLine cli) {
-                return cli.hasOption(REMOTE_KB_MODE_CLIENT.getOpt()) || cli.hasOption(SERVER_ADDRESS.getOpt());
+    static boolean isClientMode(CommandLine cli){
+        return cli.hasOption(REMOTE_KB_MODE_CLIENT.getOpt()) || cli.hasOption(SERVER_ADDRESS.getOpt()) ;
+    }
+
+    static boolean isServerMode(CommandLine cli) {
+        return cli.hasOption(REMOTE_KB_MODE_SERVER.getOpt()) || cli.hasOption(PORT.getOpt()) ;
+    }
+
+    static boolean CheckForConflictingArguments(CommandLine cli, Options commandLineOptions) {
+
+        HelpFormatter formatter = new HelpFormatter();
+
+        if (cli.hasOption(LIVE_METRICS.getOpt()) && !(isClientMode(cli) || isServerMode(cli))) {
+            System.err.println("Live metrics can only be enabled with remote KB client or server mode.");
+            formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
+            return false;
         }
 
-        static boolean isServerMode(CommandLine cli) {
-                return cli.hasOption(REMOTE_KB_MODE_SERVER.getOpt()) || cli.hasOption(PORT.getOpt());
+        if ( isClientMode(cli) && isServerMode(cli) ) {
+            System.err.println("Remote KB client mode and remote KB server mode options are incompatible. Pick either one.");
+            formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
+            return false;
         }
 
-        static boolean CheckForConflictingArguments(CommandLine cli, Options commandLineOptions) {
-
-                HelpFormatter formatter = new HelpFormatter();
-
-                if (cli.hasOption(LIVE_METRICS.getOpt()) && !(isClientMode(cli) || isServerMode(cli))) {
-                        System.err.println("Live metrics can only be enabled with remote KB client or server mode.");
-                        formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
-                        return false;
-                }
-
-                if (isClientMode(cli) && isServerMode(cli)) {
-                        System.err.println(
-                                        "Remote KB client mode and remote KB server mode options are incompatible. Pick either one.");
-                        formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(CACHE.getOpt()) && !(isClientMode(cli) || isServerMode(cli))) {
-                        System.err.println("Query cache can only be enabled with remote KB mode.");
-                        formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(ONLY_OUTPUT.getOpt()) && cli.hasOption(FULL.getOpt())) {
-                        System.err.println("The options only-output and full are incompatible. Pick either one.");
-                        formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(HEAD_TARGET_RELATIONS.getOpt()) &&
-                                cli.hasOption(HEAD_EXCLUDED.getOpt())) {
-                        System.err.println(
-                                        "The options head-target-relations and head-excluded-relations cannot appear at the same time");
-                        System.err.println("AMIE+ [OPTIONS] <.tsv INPUT FILES>");
-                        return false;
-                }
-
-                if (cli.hasOption(BODY_TARGET_RELATIONS.getOpt()) &&
-                                cli.hasOption(BODY_EXCLUDED.getOpt())) {
-                        System.err.println(
-                                        "The options body-target-relations and body-excluded-relations cannot appear at the same time");
-                        formatter.printHelp(AMIE_PLUS, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(INSTANTIATION_TARGET_RELATIONS.getOpt()) &&
-                                cli.hasOption(INSTANTIATION_EXCLUDED.getOpt())) {
-                        System.err.println(
-                                        "The options instantiation-target-relations and instantiation-excluded-relations cannot appear at the same time");
-                        formatter.printHelp(AMIE_PLUS, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(INSTANTIATION_TARGET_RELATIONS.getOpt()) &&
-                                !(cli.hasOption(ALLOW_CONSTANTS.getOpt()) ||
-                                                cli.hasOption(ONLY_CONSTANTS.getOpt()))) {
-                        System.err.println(
-                                        "The option instantiation-target-relations should be used  with -const or -fconst");
-                        formatter.printHelp(AMIE_PLUS, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(INSTANTIATION_EXCLUDED.getOpt()) &&
-                                !(cli.hasOption(ALLOW_CONSTANTS.getOpt()) ||
-                                                cli.hasOption(ONLY_CONSTANTS.getOpt()))) {
-                        System.err.println(
-                                        "The option instantiation-excluded-relations should be used  with -const or -fconst");
-                        formatter.printHelp(AMIE_PLUS, commandLineOptions);
-                        return false;
-                }
-
-                if (cli.hasOption(MIN_SUPPORT.getOpt()) &&
-                                cli.hasOption(MIN_HEAD_COVERAGE.getOpt()) &&
-                                !cli.hasOption(PRUNING_METRIC.getOpt())) {
-                        System.err.println(
-                                        "Warning: Both -mins and -minhc are set but only the default pruning metric will be used");
-                }
-
-                return true;
-
+        if (cli.hasOption(CACHE.getOpt()) && !(isClientMode(cli) || isServerMode(cli))) {
+            System.err.println("Query cache can only be enabled with remote KB mode.");
+            formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
+            return false;
         }
+
+
+        if (cli.hasOption(ONLY_OUTPUT.getOpt()) && cli.hasOption(FULL.getOpt())) {
+            System.err.println("The options only-output and full are incompatible. Pick either one.");
+            formatter.printHelp(AMIE_CMD_LINE_SYNTAX, commandLineOptions);
+            return false;
+        }
+
+        if (cli.hasOption(HEAD_TARGET_RELATIONS.getOpt()) &&
+                cli.hasOption(HEAD_EXCLUDED.getOpt())) {
+            System.err.println("The options head-target-relations and head-excluded-relations cannot appear at the same time");
+            System.err.println("AMIE+ [OPTIONS] <.tsv INPUT FILES>");
+            return false;
+        }
+
+        if (cli.hasOption(BODY_TARGET_RELATIONS.getOpt()) &&
+                cli.hasOption(BODY_EXCLUDED.getOpt())) {
+            System.err.println("The options body-target-relations and body-excluded-relations cannot appear at the same time");
+            formatter.printHelp(AMIE_PLUS, commandLineOptions);
+            return false;
+        }
+
+        if (cli.hasOption(INSTANTIATION_TARGET_RELATIONS.getOpt()) &&
+                cli.hasOption(INSTANTIATION_EXCLUDED.getOpt())) {
+            System.err.println("The options instantiation-target-relations and instantiation-excluded-relations cannot appear at the same time");
+            formatter.printHelp(AMIE_PLUS, commandLineOptions);
+            return false;
+        }
+
+        if (cli.hasOption(INSTANTIATION_TARGET_RELATIONS.getOpt()) &&
+                !(cli.hasOption(ALLOW_CONSTANTS.getOpt()) ||
+                        cli.hasOption(ONLY_CONSTANTS.getOpt()))) {
+            System.err.println("The option instantiation-target-relations should be used  with -const or -fconst");
+            formatter.printHelp(AMIE_PLUS, commandLineOptions);
+            return false;
+        }
+
+        if (cli.hasOption(INSTANTIATION_EXCLUDED.getOpt()) &&
+                !(cli.hasOption(ALLOW_CONSTANTS.getOpt()) ||
+                        cli.hasOption(ONLY_CONSTANTS.getOpt()))) {
+            System.err.println("The option instantiation-excluded-relations should be used  with -const or -fconst");
+            formatter.printHelp(AMIE_PLUS, commandLineOptions);
+            return false;
+        }
+
+        if (cli.hasOption(MIN_SUPPORT.getOpt()) &&
+                cli.hasOption(MIN_HEAD_COVERAGE.getOpt()) &&
+                !cli.hasOption(PRUNING_METRIC.getOpt())) {
+            System.err.println("Warning: Both -mins and -minhc are set but only the default pruning metric will be used");
+        }
+
+        return true;
+
+    }
 }

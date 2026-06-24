@@ -2,6 +2,7 @@ package amie.mining.assistant.pyclause;
 
 import java.util.Collection;
 
+import amie.data.AbstractKB;
 import amie.data.KB;
 import amie.mining.assistant.DefaultMiningAssistant;
 import amie.mining.assistant.MiningOperator;
@@ -11,7 +12,7 @@ import it.unimi.dsi.fastutil.ints.IntList;
 
 public class AnyBurlMiningAssistant extends DefaultMiningAssistant {
 
-	public AnyBurlMiningAssistant(KB dataSource) {
+	public AnyBurlMiningAssistant(AbstractKB dataSource) {
 		super(dataSource);
 	}
 
@@ -38,7 +39,7 @@ public class AnyBurlMiningAssistant extends DefaultMiningAssistant {
 			return;
 		}
 
-		if (rule.isClosed(false) || this.enforceConstants) {
+		if (rule.isClosed() || this.enforceConstants) {
 			return;
 		}
 
@@ -91,7 +92,7 @@ public class AnyBurlMiningAssistant extends DefaultMiningAssistant {
 		IntList joinVariables = new IntArrayList();
 
 		// Then do it for all values
-		if (rule.isClosed(true)) {
+		if (rule.isClosedExcludeSpecialAtoms()) {
 			return;
 		}
 

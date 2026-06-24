@@ -230,6 +230,13 @@ public class MiningAssistant {
 	protected int maxDepthConst;
 
 	/**
+	 * It determines the maximum number of constants that will be considered
+	 * for the instantiation of atoms. Mining operators will then take the top
+	 * 'maxConstantsInExploration' constants sorted by support when refining rules.
+	 */
+	protected int maxConstantsInExploration;
+
+	/**
 	 * @param dataSource
 	 */
 	public MiningAssistant(AbstractKB dataSource) {
@@ -262,6 +269,7 @@ public class MiningAssistant {
 		this.miningOperators = new LinkedList<>();
 		computeOperatorHierarchy();
 		this.formatter = RuleFormatterFactory.getDefaultFormatter(false);
+		this.maxConstantsInExploration = 5;
 	}
 
 	/**
@@ -657,7 +665,7 @@ public class MiningAssistant {
 		IntList joinVariables = null;
 
 		// Then do it for all values
-		if (rule.isClosed(true)) {
+		if (rule.isClosedExcludeSpecialAtoms()) {
 			joinVariables = rule.getOpenableVariables();
 		} else {
 			joinVariables = rule.getOpenVariables();
@@ -782,7 +790,7 @@ public class MiningAssistant {
 		IntList allVariables = rule.getOpenableVariables();
 		IntList openVariables = rule.getOpenVariables();
 
-		if (rule.isClosed(true)) {
+		if (rule.isClosedExcludeSpecialAtoms()) {
 			sourceVariables = rule.getOpenableVariables();
 		} else {
 			sourceVariables = openVariables;
@@ -947,7 +955,7 @@ public class MiningAssistant {
 	 * @return
 	 */
 	public boolean shouldBeOutput(Rule candidate) {
-		return candidate.isClosed(true);
+		return candidate.isClosedExcludeSpecialAtoms();
 	}
 
 	/**
@@ -1099,7 +1107,7 @@ public class MiningAssistant {
 	 * @param r2
 	 * @return
 	 */
-	private double computeOverlap(int[] jinfo, int r1, int r2) {
+    public double computeOverlap(int[] jinfo, int r1, int r2) {
 		if (jinfo[0] == 0 && jinfo[1] == 0) {
 			return this.kb.overlap(r1, r2, KB.SUBJECT2SUBJECT);
 		} else if (jinfo[0] == 2 && jinfo[1] == 2) {

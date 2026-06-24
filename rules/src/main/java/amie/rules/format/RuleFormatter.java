@@ -36,6 +36,8 @@ public abstract class RuleFormatter {
 		formatMappings.put(OutputColumn.StdConfUpperBound, "%f");
 		formatMappings.put(OutputColumn.PcaConfUpperBound, "%f");
 		formatMappings.put(OutputColumn.PcaConfEstimation, "%f");
+		formatMappings.put(OutputColumn.ApproxSupport, "%f");
+
 	}
 
 	public abstract String format(Rule rule);

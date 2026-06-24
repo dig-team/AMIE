@@ -9,12 +9,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -22,7 +25,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import amie.data.*;
 import amie.data.remote.Caching;
-import amie.mining.utils.AMIEOptions;
+import amie.mining.miniAmie.miniAMIE;
+import amie.mining.utils.*;
 import org.apache.commons.cli.*;
 
 import amie.mining.assistant.MiningAssistant;
@@ -39,6 +43,8 @@ import amie.data.javatools.administrative.Announce;
 
 import amie.data.javatools.datatypes.MultiMap;
 import org.apache.commons.lang.StringUtils;
+
+import static amie.mining.utils.Benchmarking.PeakMemory;
 
 /**
  * Main class that implements the AMIE algorithm for rule mining on ontologies.
@@ -94,7 +100,12 @@ public class AMIE {
     /**
      * Metric used to prune the mining tree
      */
-    protected PruningMetric pruningMetric;
+    protected static PruningMetric pruningMetric;
+
+    static double minHeadCover = DEFAULT_HEAD_COVERAGE;
+    static int minSup = DEFAULT_SUPPORT;
+    static int maxDepth = 3;
+
 
     /**
      * Preferred number of threads
@@ -105,7 +116,7 @@ public class AMIE {
      * If true, print the rules as they are discovered.
      */
     protected boolean realTime;
-
+    static int SearchSpaceSize = 0 ;
     /**
      * List of target head relations.
      */
@@ -115,6 +126,8 @@ public class AMIE {
      * Output stream for the rules (stdout by default)
      */
     protected PrintStream rulesOutputStream;
+
+    protected boolean interrupted;
 
     /**
      * @param assistant         An object that implements the logic of the mining
@@ -139,6 +152,7 @@ public class AMIE {
         this.realTime = true;
         this.seeds = null;
         this.rulesOutputStream = System.out;
+        this.interrupted = false;
     }
 
     public MiningAssistant getAssistant() {
@@ -148,6 +162,8 @@ public class AMIE {
     public boolean isVerbose() {
         return assistant.isVerbose();
     }
+
+    public boolean hasBeenInterrupted() { return interrupted; }
 
     public boolean isRealTime() {
         return realTime;
@@ -174,6 +190,7 @@ public class AMIE {
      * @throws Exception
      */
     public List<Rule> mine() throws Exception {
+        this.interrupted = true;
         List<Rule> result = new ArrayList<>();
         MultiMap<Integer, Rule> indexedResult = new MultiMap<>();
         RuleConsumer consumerObj = null;
@@ -217,6 +234,8 @@ public class AMIE {
             job.join();
         }
 
+        System.out.println("Search space size: "+ SearchSpaceSize);
+
         if (realTime) {
             consumerObj.terminate();
             consumerThread.join();
@@ -235,6 +254,7 @@ public class AMIE {
                 printRulePrefix(object);
             }
         }
+        this.interrupted = false;
         return result;
     }
 
@@ -318,6 +338,8 @@ public class AMIE {
 
         }
     }
+
+
 
     /**
      * This class implements the AMIE algorithm in a single thread.
@@ -413,6 +435,7 @@ public class AMIE {
                             Collection<Rule> items = entry.getValue();
                             if (!operator.equals("dangling")) {
                                 queryPool.queueAll(items);
+                                SearchSpaceSize += items.size();
                             }
                         }
 
@@ -420,7 +443,9 @@ public class AMIE {
                         // queryPool.queueAll(temporalOutput);
                         if (currentRule.getRealLength() < assistant.getMaxDepth() - 1) {
                             if (temporalOutputMap.containsKey("dangling")) {
-                                queryPool.queueAll(temporalOutputMap.get("dangling"));
+                                Collection<Rule> dangling = temporalOutputMap.get("dangling");
+                                queryPool.queueAll(dangling);
+                                SearchSpaceSize += dangling.size();
                             }
                         }
                     }
@@ -467,7 +492,7 @@ public class AMIE {
         }
     }
 
-    private static class InitElements {
+    public static class InitElements {
         public HelpFormatter formatter = new HelpFormatter();
         // Create the command line parser and define the supported options
         public CommandLineParser parser = new PosixParser();
@@ -477,7 +502,8 @@ public class AMIE {
         public Schema schema = null;
     }
 
-    private static InitElements initFromArgs(String[] args) {
+    public static InitElements initFromArgs(String[] args) {
+
 
         InitElements initElements = new InitElements();
 
@@ -524,7 +550,16 @@ public class AMIE {
         List<File> targetFiles = new ArrayList<>();
         List<File> schemaFiles = new ArrayList<>();
 
-        AbstractKB dataSource = new KB();
+        AbstractKB dataSource = null;
+
+        if (cli.hasOption(AMIEOptions.MINI_AMIE.getOpt())) {
+            dataSource = new MiniKB();
+        } else if (cli.hasOption(AMIEOptions.MULTILINGUAL.getOpt())) {
+            dataSource = new MultilingualKB();
+        } else {
+            dataSource = new KB();
+        }
+
 
         // Caching
         if (cli.hasOption(AMIEOptions.CPOL.getOpt())) {
@@ -543,9 +578,6 @@ public class AMIE {
             System.out.println("Note: Query caching is enabled, but make sure communication layer relies on it.");
         }
 
-        if (cli.hasOption(AMIEOptions.MULTILINGUAL.getOpt())) {
-            dataSource = new MultilingualKB();
-        }
 
         if (cli.hasOption(AMIEOptions.DELIMITER.getOpt())) {
             dataSource.setDelimiter(cli.getOptionValue(AMIEOptions.DELIMITER.getOpt()));
@@ -561,10 +593,7 @@ public class AMIE {
 
         double minStdConf = DEFAULT_STD_CONFIDENCE;
         double minPCAConf = DEFAULT_PCA_CONFIDENCE;
-        int minSup = DEFAULT_SUPPORT;
         int minInitialSup = DEFAULT_INITIAL_SUPPORT;
-        double minHeadCover = DEFAULT_HEAD_COVERAGE;
-        int maxDepth = 3;
         int maxDepthConst = 3;
         int recursivityLimit = 3;
         boolean realTime = true;
@@ -865,6 +894,64 @@ public class AMIE {
                     break;
             }
         }
+
+        // Outputting global execution metrics to csv
+        String outputConfigurationPathOption = AMIEOptions.GLOBAL_SEARCH_RESULT_PATH.getOpt() ;
+        if (cli.hasOption(outputConfigurationPathOption)) {
+            GlobalSearchResult.OutputConfigurationToAlreadyExistingCSV = true ;
+            GlobalSearchResult.OutputConfigurationCsvPath = cli.getOptionValue(outputConfigurationPathOption) ;
+        }
+
+        // Mini-AMIE
+        if (cli.hasOption(AMIEOptions.MINI_AMIE.getOpt())) {
+            System.out.println("Running mini-AMIE! Have fun.");
+            if (!cli.hasOption(AMIEOptions.PRUNING_METRIC.getOpt()) ) {
+                // Default pruning metric for mini-AMIE is ApproximateSupport
+                metric = PruningMetric.ApproximateSupport ;
+            } else {
+                String pm = cli.getOptionValue(AMIEOptions.PRUNING_METRIC.getOpt()) ;
+                switch (pm) {
+                    case "support" ->  metric = PruningMetric.Support;
+                    case "hc" -> metric = PruningMetric.HeadCoverage;
+                    case "appsupport" -> metric = PruningMetric.ApproximateSupport;
+                    case "apphc" -> metric = PruningMetric.ApproximateHeadCoverage;
+                    default -> throw new IOException("Mini-AMIE : Unrecognized pruning metric \"" + pm + "\"") ;
+                }
+            }
+            String miniAMIECompareToGroundTruthOption = AMIEOptions.MINI_AMIE_COMPARE_TO_GROUND_TRUTH.getOpt() ;
+
+            if (cli.hasOption(AMIEOptions.MINI_AMIE_COMPUTE_ACTUAL_METRICS.getOpt())) {
+                System.out.println("Mini-AMIE will compute the actual support and PCA confidence of the rules - besides the approximations");
+            }
+
+            miniAMIE.Kb = dataSource;
+            miniAMIE.PM = metric ;
+            miniAMIE.MaxRuleSize = maxDepth;
+            miniAMIE.MinSup = minSup;
+            miniAMIE.MinHC = minHeadCover;
+            miniAMIE.ComputeActualMetrics = cli.hasOption(AMIEOptions.MINI_AMIE_COMPUTE_ACTUAL_METRICS.getOpt());
+            miniAMIE.EnableVariableSwitch =  cli.hasOption(AMIEOptions.MINI_AMIE_ENABLE_VARIABLE_SWITCH.getOpt());
+            miniAMIE.EnableConstants = cli.hasOption(AMIEOptions.ALLOW_CONSTANTS.getOpt());
+            miniAMIE.UseDirectionalSelectivity = cli.hasOption(AMIEOptions.MINI_AMIE_USE_DIRECTIONAL_SELECTIVITY.getOpt());
+            miniAMIE.NThreads = nThreads;
+            miniAMIE.Verbose = cli.hasOption(AMIEOptions.MINI_AMIE_VERBOSE.getOpt());
+            miniAMIE.CompareToGroundTruth = cli.hasOption(miniAMIECompareToGroundTruthOption);
+            miniAMIE.PathToGroundTruthRules = miniAMIE.CompareToGroundTruth ?
+                    cli.getOptionValue(miniAMIECompareToGroundTruthOption) : null;
+
+            if (cli.hasOption(AMIEOptions.OUTPUT_FORMAT.getOpt()) )
+                miniAMIE.UseAnyBurlOutputFormat = Objects.equals(cli.getOptionValue(AMIEOptions.OUTPUT_FORMAT.getOpt()),
+                    "anyburl");
+
+            if (cli.hasOption(AMIEOptions.OUTPUT_FILE.getOpt()) ) {
+                miniAMIE.CustomRulesPath = true;
+                miniAMIE.OutputRulesPath = cli.getOptionValue(AMIEOptions.OUTPUT_FILE.getOpt());
+                System.out.println("Set custom output path: " + cli.getOptionValue(AMIEOptions.OUTPUT_FILE.getOpt()));
+            }
+            return null ;
+
+        }
+
         System.out.println("Using " + metric + " as pruning metric with minimum threshold " + minMetricValue);
 
         if (cli.hasOption(AMIEOptions.BIAS.getOpt())) {
@@ -1037,7 +1124,7 @@ public class AMIE {
     /**
      * It defines the stream on which the mined rules will be written.
      * By default this is System.out
-     * 
+     *
      * @param outStream
      */
     public void setRulesOutputStream(PrintStream outStream) {
@@ -1095,6 +1182,18 @@ public class AMIE {
         return formattedDuration.toString().trim();
     }
 
+    private static void outputRules(AMIE miner, List<Rule> rules) {
+        if (!miner.isRealTime()) {
+            miner.outputHeader();
+            for (Rule rule : rules) {
+                miner.outputRule(rule);
+            }
+        }
+
+        miner.closeOutput();
+
+    }
+
     /**
      * AMIE's main program
      *
@@ -1102,6 +1201,7 @@ public class AMIE {
      * @throws Exception
      */
     public static void main(String[] args) throws Exception {
+        long startTime = System.currentTimeMillis();
         InitElements initElements = initFromArgs(args);
 
         if (initElements.cli.getArgs().length < 1
@@ -1121,29 +1221,58 @@ public class AMIE {
         long loadingStartTime = System.currentTimeMillis();
 
         AMIE miner = AMIE.getInstance(initElements);
-        if (miner == null)
-            return;
+        List<Rule> rules = new ArrayList<>();
 
+        // Handle the SIGTERM signal
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                if (miner == null) {
+                    if (!Files.exists(Paths.get(GlobalSearchResult.OutputConfigurationCsvPath))) {
+                        System.err.println("Ending miniAMIE gracefully due to premature termination");
+                        miniAMIE.outputRules();
+                    }
+                } else {
+                    if (miner.hasBeenInterrupted()) {
+                        System.err.println("Ending AMIE gracefully due to premature termination");
+                        AMIE.outputRules(miner, rules);
+                    }
+                }
+                GlobalSearchResult.PrintGlobalSearchResultToCSV(
+                        maxDepth,
+                        pruningMetric,
+                        minSup,
+                        minHeadCover,
+                        miner == null? -1 : miner.nThreads , // This tells us if the program ended prematurely
+                        System.currentTimeMillis() - startTime,
+                        SearchSpaceSize
+                );
+            }
+        });
+
+        if (miner == null) {
+            // It means we are running miniAMIE
+            miniAMIE.Run() ;
+            System.exit(0);
+        }
         long loadingTime = System.currentTimeMillis() - loadingStartTime;
 
         System.out.println("MRT calls: " + KB.STAT_NUMBER_OF_CALL_TO_MRT.get());
         Announce.doing("Starting the mining phase");
 
         long time = System.currentTimeMillis();
-        List<Rule> rules = miner.mine();
+        rules.addAll(miner.mine());
+        Announce.doing("Ended the mining phase");
 
-        if (!miner.isRealTime()) {
-            miner.outputHeader();
-            for (Rule rule : rules) {
-                miner.outputRule(rule);
-            }
-        }
-
-        miner.closeOutput();
+        outputRules(miner, rules);
 
         long miningTime = System.currentTimeMillis() - time;
         System.out.println("Mining done in " + formatDuration(miningTime));
+
         Announce.done("Total time " + formatDuration(miningTime + loadingTime));
+
+        System.out.println("Used memory (peak) " + PeakMemory() + " kilobytes");
+
         System.out.println(rules.size() + " rules mined.");
     }
 

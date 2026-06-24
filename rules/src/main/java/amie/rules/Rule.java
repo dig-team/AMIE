@@ -159,6 +159,19 @@ public class Rule {
      */
     private double _confidenceRunningTime;
 
+    /**
+     * It means the rule is closed, i.e., each variable in the rule appears in
+     * at least two atoms.
+     */
+    private boolean closed = false;
+
+    /**
+     * Like 'closed' but it excludes hidden variables (those used for value constraints)
+     * from the definition.
+     */
+    private boolean closedExcludeSpecialAtoms = false;
+
+
     private boolean finalized = false;
 
     public boolean isFinal() {
@@ -297,6 +310,8 @@ public class Rule {
         this.ancestors = new HashSet<>();
         this.generation = -1;
         this.kb = kb;
+        this.closed = otherQuery.closed;
+        this.closedExcludeSpecialAtoms = otherQuery.closedExcludeSpecialAtoms;
     }
 
     public Rule(int[] head, List<int[]> body, double cardinality, AbstractKB kb) {
@@ -318,6 +333,8 @@ public class Rule {
         this.ancestors = new HashSet<>();
         this.generation = -1;
         this.kb = kb;
+        this.closed = this.isClosed(false);
+        this.closedExcludeSpecialAtoms = this.isClosed(true);
     }
 
     /**
@@ -352,7 +369,7 @@ public class Rule {
      * 
      * @return
      */
-    private int newVariable() {
+    public int newVariable() {
         return --this.highestVariable;
     }
 
@@ -911,14 +928,33 @@ public class Rule {
 
     /**
      *
+     * @return boolean True if the rule is closed, i.e., each variable in the
+     *         rule occurs at least in two atoms.
+     */
+    public boolean isClosed() {
+        return this.closed;
+    }
+
+    /**
+     *
+     * @return boolean True if the rule is closed, i.e., each variable in the
+     *         rule occurs at least in two atoms. Special atoms such as DIFFERENTFROM
+     *         are excluded
+     *
+     */
+    public boolean isClosedExcludeSpecialAtoms() {
+        return this.closedExcludeSpecialAtoms;
+    }
+
+    /**
+     *
      * @param ignoreSpecialAtoms If true, atoms special atoms such as DIFFERENTFROM
-     *                           are ignored
-     *                           in the count.
+     *                           are ignored in the count.
      * @return boolean True if the rule is closed, i.e., each variable in the
      *         rule occurs at least in two atoms.
      *
      */
-    public boolean isClosed(boolean ignoreSpecialAtoms) {
+    protected boolean isClosed(boolean ignoreSpecialAtoms) {
         if (triples.isEmpty()) {
             return false;
         }
@@ -1055,6 +1091,8 @@ public class Rule {
         Rule newQuery = new Rule(this, cardinality, kb);
         newQuery.triples.add(atom1.clone());
         newQuery.triples.add(atom2.clone());
+        newQuery.closed = newQuery.isClosed(false);
+        newQuery.closedExcludeSpecialAtoms = newQuery.isClosed(true);
         return newQuery;
     }
 
@@ -1062,13 +1100,15 @@ public class Rule {
         Rule newQuery = new Rule(this, cardinality, kb);
         int[] copyNewEdge = newAtom.clone();
         newQuery.triples.add(copyNewEdge);
+        newQuery.closed = newQuery.isClosed(false);
+        newQuery.closedExcludeSpecialAtoms = newQuery.isClosed(true);
         return newQuery;
     }
 
     /**
      * Constructs a new rule identical to the calling one except that
      * the last atom is replaced by the argument.
-     * 
+     *
      * @param newAtom
      * @return
      */
@@ -1076,13 +1116,15 @@ public class Rule {
         Rule newRule = new Rule(this, cardinality, kb);
         int ruleSize = newRule.getLength();
         newRule.getTriples().set(ruleSize - 1, newAtom.clone());
+        newRule.closed = newRule.isClosed(false);
+        newRule.closedExcludeSpecialAtoms = newRule.isClosed(true);
         return newRule;
     }
 
     /**
      * It returns a new rule where the last atom is replaced by a
      * type constraint with the given subtype.
-     * 
+     *
      * @param subtype
      * @param cardinality
      * @return
@@ -1093,6 +1135,8 @@ public class Rule {
         lastTriple[1] = kb.schema.typeRelationBS;
         lastTriple[2] = subtype;
         newRule.setFunctionalVariablePosition(functionalVariablePosition);
+        newRule.closed = newRule.isClosed(false);
+        newRule.closedExcludeSpecialAtoms = newRule.isClosed(true);
         return newRule;
     }
 
@@ -1110,7 +1154,7 @@ public class Rule {
 
     /**
      * Returns a hash code that depends on the given arguments.
-     * 
+     *
      * @param headKey
      * @param generation
      * @return
@@ -1125,7 +1169,7 @@ public class Rule {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#hashCode()
      */
     @Override
@@ -1146,7 +1190,7 @@ public class Rule {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -1212,9 +1256,10 @@ public class Rule {
         return strBuilder.toString();
     }
 
+    /** sortBody guarantees that atoms in rules are output in the same order across runs of the program
+     */
     public Collection<int[]> sortBody() {
-        // Guarantee that atoms in rules are output in the same order across runs of the
-        // program
+
         class TripleComparator implements Comparator<int[]> {
 
             public int compare(int[] t1, int[] t2) {
@@ -1384,7 +1429,7 @@ public class Rule {
 
     /**
      * It returns a datalog-like representation of the rule of the form
-     * r(X, Y) <= r1(X, A1) .... rn(An, Y) 
+     * r(X, Y) <= r1(X, A1) .... rn(An, Y)
      * @param includeSpecialAtoms
      * @return
      */
@@ -1424,6 +1469,8 @@ public class Rule {
         int[] lastNewPattern = newQuery.getLastTriplePattern();
         lastNewPattern[danglingPosition] = constant;
         newQuery.computeHeadKey();
+        newQuery.closed = newQuery.isClosed(false);
+        newQuery.closedExcludeSpecialAtoms = newQuery.isClosed(true);
         return newQuery;
     }
 
@@ -1442,6 +1489,8 @@ public class Rule {
         int[] targetEdge = newQuery.getTriples().get(triplePos);
         targetEdge[danglingPosition] = constant;
         newQuery.cleanInequalityConstraints();
+        newQuery.closed = newQuery.isClosed(false);
+        newQuery.closedExcludeSpecialAtoms = newQuery.isClosed(true);
         return newQuery;
     }
 
@@ -1533,6 +1582,10 @@ public class Rule {
         this.pcaConfidenceEstimation = pcaEstimation;
     }
 
+    public double getPcaEstimation() {
+        return this.pcaConfidenceEstimation;
+    }
+
     /**
      * For rules with an even number of atoms (n &gt; 2), it checks if it contains
      * level 2 redundant subgraphs, that is, each relation occurs exactly twice
@@ -1571,7 +1624,7 @@ public class Rule {
     /**
      * If returns true if the list of triples contains an atom
      * using the given relation.
-     * 
+     *
      * @param triples
      * @param relation
      * @return
@@ -1583,7 +1636,7 @@ public class Rule {
 
     /**
      * It returns the index of the first atom using the relation.
-     * 
+     *
      * @param triples
      * @param relation
      * @return the index of the atom containing the relation or -1 if such atom
@@ -1650,7 +1703,7 @@ public class Rule {
      * @param expression
      * @return
      */
-    private boolean occursInHead(int expression) {
+    protected boolean occursInHead(int expression) {
         int[] head = getHead();
         return (expression == head[0] || expression == head[2]);
     }
@@ -1660,8 +1713,8 @@ public class Rule {
      * in the body (the method containsSinglePath returns true), it returns the
      * atoms sorted so that the path can be reproduced.
      * Note: This function assumes the rule can be expressed as a path, hence
-     * its results with other types of rules, such as rules with constants, are unknown. 
-     * 
+     * its results with other types of rules, such as rules with constants, are unknown.
+     *
      * @param startFromFunctionalVariable
      * @return The atoms of the rules sorted to form a parth
      */
@@ -1758,7 +1811,7 @@ public class Rule {
     /**
      * It returns true if the atoms of the current are a superset for the
      * atoms of the rule sent as argument.
-     * 
+     *
      * @param someRule
      * @return
      */
@@ -1789,7 +1842,7 @@ public class Rule {
      * Return an equivalent rule (body atoms rotation) with no parent.
      *
      * Useful for debugging.
-     * 
+     *
      * @return
      */
     public Rule getAlternativeEquivalent() {
@@ -1803,6 +1856,8 @@ public class Rule {
         }
         Rule result = new Rule(getHead(), newBody, this.support, kb);
         result.setGeneration(generation);
+        result.closed = result.isClosed(false);
+        result.closedExcludeSpecialAtoms = result.isClosed(true);
         return result;
     }
 
@@ -1836,6 +1891,7 @@ public class Rule {
                 return this;
         }
     }
+
 
     public static void main(String[] args) {
         KB kb = new KB();

@@ -101,9 +101,7 @@ public class DefaultMiningAssistant extends MiningAssistant {
 			return;
 		}
 
-		int nPatterns = rule.getTriples().size();
-
-		if (rule.isEmpty())
+        if (rule.isEmpty())
 			return;
 
 		if (!isNotTooLong(rule))
@@ -118,7 +116,7 @@ public class DefaultMiningAssistant extends MiningAssistant {
 			return;
 		}
 
-		if (rule.isClosed(false)) {
+		if (rule.isClosed()) {
 			sourceVariables = allVariables;
 			targetVariables = allVariables;
 		} else {
@@ -252,8 +250,6 @@ public class DefaultMiningAssistant extends MiningAssistant {
 	 */
 	@MiningOperator(name = "dangling")
 	public void getDanglingAtoms(Rule rule, double minSupportThreshold, Collection<Rule> output) {
-		int[] newEdge = rule.fullyUnboundTriplePattern();
-
 		if (rule.isEmpty()) {
 			throw new IllegalArgumentException("This method expects a non-empty query");
 		}
@@ -276,13 +272,14 @@ public class DefaultMiningAssistant extends MiningAssistant {
 		IntList openVariables = rule.getOpenVariables();
 
 		// Then do it for all values
-		if (rule.isClosed(true)) {
+		if (rule.isClosedExcludeSpecialAtoms()) {
 			joinVariables = rule.getOpenableVariables();
 		} else {
 			joinVariables = openVariables;
 		}
 
 		int[] joinPositions = new int[] { 0, 2 };
+		int[] newEdge = rule.fullyUnboundTriplePattern();
 
 		getDanglingAtoms(rule, newEdge, minSupportThreshold, joinVariables, joinPositions, output);
 	}
@@ -494,8 +491,12 @@ public class DefaultMiningAssistant extends MiningAssistant {
 		}
 
 		int joinPosition = (danglingPosition == 0 ? 2 : 0);
-		for (int constant : constants.keySet()) {
+		IntList promisingConstants = decreasingKeys(constants);
+		int nConsts = 0;
+		for (int constant : promisingConstants) {
 			int cardinality = constants.get(constant);
+			if (nConsts++ > this.maxConstantsInExploration && parentQuery != null) break;
+			nConsts++;
 			if (cardinality >= minSupportThreshold) {
 				int[] targetEdge = danglingEdge.clone();
 				targetEdge[danglingPosition] = constant;
@@ -516,6 +517,8 @@ public class DefaultMiningAssistant extends MiningAssistant {
 					candidate.addParent(parentQuery);
 					output.add(candidate);
 				}
+			} else {
+				break;
 			}
 		}
 	}
