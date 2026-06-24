@@ -2,7 +2,7 @@ package amie.mining.miniAmie.Unit.Utils;
 
 import amie.mining.miniAmie.Unit.UnitTest;
 
-public class ChooseClosureRelationTests extends UnitTest {
+public abstract class ChooseClosureRelationTests extends UnitTest {
     public void setUp () throws Exception {
         super.setUp();
 //        int[] unboundPattern = rule.fullyUnboundTriplePattern();

@@ -11,7 +11,7 @@ The evaluation is wrapped by the Python script amie_link_prediction_evaluate.py,
 $ python amie_linkprediction_evaluate.py <CONFIG_FILE>
 ```
 **Note**: This script assumes that (i) execution is done from the amie's project root directory and (ii) the binary executable 
-AMIE jar bin/amie3.5.1.jar exists
+AMIE jar bin/amie4.0.0.jar exists
 
 The argument ``<CONFIG_FILE>`` is a JSON file containing a list of evaluation configurations. An example file is
 ```

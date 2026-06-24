@@ -11,7 +11,7 @@ import json
 from joblib import Parallel, delayed
 
 OUTPUT_DIR = './results/inference/'
-AMIE_ARGS = ['java', '-cp', 'bin/amie3.5.1.jar', 'amie.linkprediction.Evaluator']
+AMIE_ARGS = ['java', '-cp', 'bin/amie4.0.0.jar', 'amie.linkprediction.Evaluator']
 
 
 def filename_from_config(json_config):
@@ -66,5 +66,4 @@ if __name__ == '__main__':
         rule_batches = Parallel(n_jobs=n_jobs, prefer="processes")(
             delayed(run_job)(job_config, n_configs) for job_config in json_config
         )
-
 

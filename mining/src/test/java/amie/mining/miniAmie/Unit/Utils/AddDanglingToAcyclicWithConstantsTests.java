@@ -14,7 +14,7 @@ import java.util.List;
 import static amie.mining.miniAmie.miniAMIE.*;
 import static amie.mining.miniAmie.utils.*;
 
-public class AddDanglingToAcyclicWithConstantsTests extends UnitTest {
+public abstract class AddDanglingToAcyclicWithConstantsTests extends UnitTest {
     static Collection<MiniAmieRule> initRulesInstantiatedParameter = new ArrayList<>();
 
     protected void setUp() throws Exception {

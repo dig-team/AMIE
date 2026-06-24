@@ -6,10 +6,10 @@
     <parent>
         <groupId>fr.enst.dbweb</groupId>
         <artifactId>amie</artifactId>
-        <version>2.0</version>
+        <version>4.0.0</version>
     </parent>
     <artifactId>mining</artifactId>
-    <version>2.0</version>
+    <version>4.0.0</version>
     <name>mining</name>
     <url>http://maven.apache.org</url>
     <properties>
@@ -35,7 +35,7 @@
         <dependency>
             <groupId>fr.enst.dbweb</groupId>
             <artifactId>rules</artifactId>
-            <version>1.0</version>
+            <version>4.0.0</version>
         </dependency>
     </dependencies>
 
@@ -61,7 +61,7 @@
                             <descriptorRefs>
                                 <descriptorRef>jar-with-dependencies</descriptorRef>
                             </descriptorRefs>
-                            <finalName>amie3.5.1</finalName>
+                            <finalName>amie4.0.0</finalName>
                             <appendAssemblyId>false</appendAssemblyId>
                             <outputDirectory>../bin</outputDirectory>
                         </configuration>

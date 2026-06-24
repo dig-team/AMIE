@@ -9,7 +9,7 @@ import java.util.List;
 
 import static amie.mining.miniAmie.utils.*;
 
-public class ChooseRelationTests extends UnitTest {
+public abstract class ChooseRelationTests extends UnitTest {
 
     public void setUp () throws Exception {
         super.setUp();

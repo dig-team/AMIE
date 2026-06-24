@@ -8,7 +8,7 @@ AMIE is a system to mine Horn rules on knowledge bases. A knowledge base is a co
 AMIE can find rules in such knowledge bases, such as for example
 > wasBornIn(x, y) & isLocatedIn(y, z) => hasNationality(x, z)
 
-These rules are accompanied by various confidence scores. “AMIE” stands for “Association Rule Mining under Incomplete Evidence”. This repository contains the latest version of AMIE, called AMIE 3.5. The versions of AMIE prior to 3.x can be found [here](https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/amie/). The code of version 3.0 (used for our [2020 ESWC publication](https://luisgalarraga.de/docs/amie3.pdf)) can be found [here](https://github.com/dig-team/amie/tree/v3.0).
+These rules are accompanied by various confidence scores. "AMIE" stands for "Association Rule Mining under Incomplete Evidence". This repository contains the latest version of AMIE, called AMIE 4.0.0. The versions of AMIE prior to 3.x can be found [here](https://www.mpi-inf.mpg.de/departments/databases-and-information-systems/research/yago-naga/amie/). The code of version 3.0 (used for our [2020 ESWC publication](https://luisgalarraga.de/docs/amie3.pdf)) can be found [here](https://github.com/dig-team/amie/tree/v3.0).
 
 ## Input files
 
@@ -29,6 +29,11 @@ In case of memory issues, try to increase the virtual machine's memory resources
 ```java -XX:-UseGCOverheadLimit -Xmx2G -jar [AMIE-JAR] [TSV file]```
 
 `MAX_HEAP_SPACE` depends on your input size and the system's available memory. The package also contains the utilities to generate and evaluate predictions from the rules mined by AMIE. Without additional arguments AMIE thresholds with PCA confidence 0.1 and head coverage 0.01. You can change these default settings. Run `java -jar [AMIE-JAR] -h` (without an input file) to see a detailed description of the available options.
+
+## Mini-AMIE
+
+MiniAMIE is a quick and dirty version of AMIE introduced by Galárraga et al., 2026. To use MiniAMIE you just need to add the argument `-mini` when executing the JAR file generated with this version of AMIE.
+The code to reproduce MiniAMIE's experimental evaluation is available at https://gitlab.inria.fr/vguerbet/benchmark-miniamie/. Have a look at the branch `miniamie` for more details.
 
 ### PyClause Integration
 To output rules that can be used by the PyClause library, you need to run AMIE with these additional parameters:
