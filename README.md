@@ -1,8 +1,3 @@
-**Note**: This branch contains the implementation of MiniAMIE, a quick and dirty version of AMIE published in the paper "MiniAMIE: Quick and Dirty Rule Mining on Knowledge Graphs". This branch will be eventually merged with AMIE's main branch. Here is some important information:
-- Code to reproduce MiniAMIE's experimental evaluation: https://gitlab.inria.fr/vguerbet/benchmark-miniamie/
-- MiniAMIE+ is a version of MiniAMIE that optimizes even further predicate selection at rule refinement. This option was enabled for the very large datasets caligraph and wikidata2014 on the most exhaustive configurations. The code is available here https://github.com/dig-team/AMIE/tree/ligher-mini-amie. This branch will also be eventually merged with AMIE's main branch.
-- To use MiniAMIE you just need to add the argument `-mini' when executing the JAR file generated with this version of AMIE. 
-
 # AMIE 
 AMIE is a system to mine Horn rules on knowledge bases. A knowledge base is a collection of facts, such as e.g. 
 > wasBornIn(Elvis, Tupelo)  
@@ -33,13 +28,17 @@ In case of memory issues, try to increase the virtual machine's memory resources
 
 `MAX_HEAP_SPACE` depends on your input size and the system's available memory. The package also contains the utilities to generate and evaluate predictions from the rules mined by AMIE. Without additional arguments AMIE thresholds with PCA confidence 0.1 and head coverage 0.01. You can change these default settings. Run `java -jar [AMIE-JAR] -h` (without an input file) to see a detailed description of the available options.
 
+## Mini-AMIE
+
+MiniAMIE is a quick and dirty version of AMIE introduced by Galárraga et al., 2026. To use MiniAMIE you just need to add the argument `-mini' when executing the JAR file generated with this version of AMIE. 
+The code to reproduce MiniAMIE's experimental evaluation is available at https://gitlab.inria.fr/vguerbet/benchmark-miniamie/. Have a look at the branch `miniamie' for more details.
+
 ### PyClause Integration
 To output rules that can be used by the PyClause library, you need to run AMIE with these additional parameters:
 
 ```-bias amie.mining.assistant.pyclause.AnyBurlMiningAssistant -ofmt anyburl```
 
 Additionally this version of AMIE also offers the possibility of outputting the rules directly into a file via the parameter via the argument: `-ofile [OUTPUT file]`. Also, users can establish different limits on rule length for rules with constants and for rules without constants (the default setting). For example, the argument `-maxad 4` mines rules up to 4 atoms (head atom included, the default value being 3). Similarly the combination of arguments `-const -maxad 4 -maxadc 3` enables constants in rule atoms, sets a limit of 4 atoms in rules without constants, and a limit of 3 atoms for rules for constants. This can be useful since the inclusion of constants in atoms (`-const`) increases the search space, thus the runtime, in a significant way.
-
 
 ### Use with remote knowledge base server
 
@@ -93,6 +92,10 @@ AMIE is managed with [Maven](https://maven.apache.org/), therefore to deploy you
 3. Maven will generate an executable jar named amie[LATEST-VERSION].jar in a new "bin/" directory. 
 
 ## Publications 
+
+> Luis Galárraga, Julianne Guerbette, Isseïnie Sinouvassane, Paul Viallard: 
+> ["MiniAMIE: Quick and Dirty Rule Mining on Knowledge Bases"](https://luisgalarraga.de/docs/IJCAI_2024_demo_paper.pdf](https://dl.acm.org/doi/10.1145/3774904.3792941)
+> Short paper at The Web Conference (WWW), 2026 
 
 > Patrick Betz, Luis Galárraga, Simon Ott, Christian Meilicke, Fabian M. Suchanek: 
 > ["PyClause-Simple and Efficient Rule Handling for Knowledge Graphs"](https://luisgalarraga.de/docs/IJCAI_2024_demo_paper.pdf)
